@@ -438,12 +438,11 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getDatabase, ref, set, get, child, update, push, query, orderByChild, equalTo, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, query, orderBy, addDoc, where, arrayUnion, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyDHPuBTZ7A4GuHfEu-K2oFSka70Gnvy-Ks",
         authDomain: "ensinamentos-b16c1.firebaseapp.com",
-        databaseURL: "https://ensinamentos-b16c1-default-rtdb.firebaseio.com",
         projectId: "ensinamentos-b16c1",
         storageBucket: "ensinamentos-b16c1.firebasestorage.app",
         messagingSenderId: "713593965269",
@@ -452,7 +451,7 @@
     
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getDatabase(app);
+    const db = getFirestore(app);
     
     let currentUser = null;
     let currentUserRole = null;
@@ -511,12 +510,12 @@
         return classes[role] || 'role-aluno';
     }
     
-    async function loadUserFromRTDB(email) {
+    async function loadUserFromFirestore(email) {
         try {
-            const userRef = ref(db, `users/${email.replace(/\./g, ',')}`);
-            const snapshot = await get(userRef);
+            const userRef = doc(db, "users", email);
+            let userDoc = await getDoc(userRef);
             
-            if (!snapshot.exists()) {
+            if (!userDoc.exists()) {
                 const newUser = {
                     email: email,
                     role: 'aluno',
@@ -527,11 +526,11 @@
                     totalQuestionsAnswered: 0,
                     totalCorrect: 0
                 };
-                await set(userRef, newUser);
-                return newUser;
+                await setDoc(userRef, newUser);
+                userDoc = await getDoc(userRef);
             }
             
-            return snapshot.val();
+            return userDoc.data();
         } catch (error) {
             console.error("Erro ao carregar usuário:", error);
             return { role: 'aluno', xp: 0, level: 1 };
@@ -541,11 +540,11 @@
     async function addXP(amount) {
         if (!currentUser) return;
         try {
-            const userRef = ref(db, `users/${currentUser.email.replace(/\./g, ',')}`);
-            const snapshot = await get(userRef);
-            const currentXP = (snapshot.val()?.xp || 0) + amount;
+            const userRef = doc(db, "users", currentUser.email);
+            const userDoc = await getDoc(userRef);
+            const currentXP = (userDoc.data()?.xp || 0) + amount;
             const newLevel = Math.floor(currentXP / 100) + 1;
-            await update(userRef, { xp: currentXP, level: newLevel });
+            await updateDoc(userRef, { xp: currentXP, level: newLevel });
             currentUserXP = currentXP;
             const xpElement = document.getElementById('xpPoints');
             if (xpElement) xpElement.innerHTML = `${currentXP} XP`;
@@ -557,14 +556,10 @@
     
     async function loadAllQuestions() {
         try {
-            const questionsRef = ref(db, 'questions');
-            const snapshot = await get(questionsRef);
+            const q = query(collection(db, "questions"), orderBy("createdAt", "desc"));
+            const snapshot = await getDocs(q);
             allQuestions = [];
-            if (snapshot.exists()) {
-                const questions = snapshot.val();
-                allQuestions = Object.entries(questions).map(([id, data]) => ({ id, ...data }));
-                allQuestions.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-            }
+            snapshot.forEach(docSnap => allQuestions.push({ id: docSnap.id, ...docSnap.data() }));
             renderQuestionsList();
         } catch (error) {
             console.error("Erro ao carregar questões:", error);
@@ -644,18 +639,11 @@
     async function loadUserTasks() {
         if (!currentUser) return;
         try {
-            const tasksRef = ref(db, 'tasks');
-            const snapshot = await get(tasksRef);
+            const tasksRef = collection(db, "tasks");
+            const q = query(tasksRef, where("targetUsers", "array-contains", currentUser.email));
+            const snapshot = await getDocs(q);
             const tasks = [];
-            
-            if (snapshot.exists()) {
-                const tasksData = snapshot.val();
-                for (const [id, task] of Object.entries(tasksData)) {
-                    if (task.targetUsers && task.targetUsers.includes(currentUser.email)) {
-                        tasks.push({ id, ...task });
-                    }
-                }
-            }
+            snapshot.forEach(docSnap => tasks.push({ id: docSnap.id, ...docSnap.data() }));
             
             const pending = tasks.filter(t => !t.completedBy?.includes(currentUser.email));
             const completed = tasks.filter(t => t.completedBy?.includes(currentUser.email));
@@ -755,13 +743,8 @@
         
         if (allCorrect && correctCount === currentTaskQuestions.length) {
             try {
-                const taskRef = ref(db, `tasks/${currentTaskId}`);
-                const snapshot = await get(taskRef);
-                const task = snapshot.val();
-                const completedBy = task.completedBy || [];
-                completedBy.push(currentUser.email);
-                await update(taskRef, { 
-                    completedBy: completedBy,
+                await updateDoc(doc(db, "tasks", currentTaskId), {
+                    completedBy: arrayUnion(currentUser.email),
                     completedAt: new Date().toISOString()
                 });
                 await addXP(currentTaskQuestions.length * 15);
@@ -780,17 +763,9 @@
     
     async function loadRanking() {
         try {
-            const usersRef = ref(db, 'users');
-            const snapshot = await get(usersRef);
+            const snapshot = await getDocs(collection(db, "users"));
             const users = [];
-            
-            if (snapshot.exists()) {
-                const usersData = snapshot.val();
-                for (const [key, user] of Object.entries(usersData)) {
-                    users.push({ email: user.email, ...user });
-                }
-            }
-            
+            snapshot.forEach(docSnap => users.push({ email: docSnap.id, ...docSnap.data() }));
             users.sort((a, b) => (b.xp || 0) - (a.xp || 0));
             
             const rankingContainer = document.getElementById('rankingList');
@@ -844,8 +819,7 @@
         }
         
         try {
-            const newQuestionRef = push(ref(db, 'questions'));
-            await set(newQuestionRef, data);
+            await addDoc(collection(db, "questions"), data);
             showToast('✅ Questão criada com sucesso!');
             document.getElementById('questionText').value = '';
             document.getElementById('imageUrl').value = '';
@@ -891,20 +865,13 @@
         let targetUsers = Array.from(targetSelect.selectedOptions).map(opt => opt.value);
         
         if (targetUsers.includes('todos') || targetUsers.length === 0) {
-            const usersRef = ref(db, 'users');
-            const snapshot = await get(usersRef);
+            const usersSnapshot = await getDocs(collection(db, "users"));
             targetUsers = [];
-            if (snapshot.exists()) {
-                const users = snapshot.val();
-                for (const [key, user] of Object.entries(users)) {
-                    targetUsers.push(user.email);
-                }
-            }
+            usersSnapshot.forEach(docSnap => targetUsers.push(docSnap.id));
         }
         
         try {
-            const newTaskRef = push(ref(db, 'tasks'));
-            await set(newTaskRef, {
+            await addDoc(collection(db, "tasks"), {
                 title: title,
                 description: document.getElementById('taskDesc').value,
                 category: document.getElementById('taskCategory').value,
@@ -931,8 +898,7 @@
     
     async function loadUsersList() {
         try {
-            const usersRef = ref(db, 'users');
-            const snapshot = await get(usersRef);
+            const snapshot = await getDocs(collection(db, "users"));
             const targetSelect = document.getElementById('targetUsers');
             const manageDiv = document.getElementById('usersManageList');
             
@@ -940,33 +906,26 @@
                 targetSelect.innerHTML = '<option value="todos">📢 Todos os usuários</option>';
             }
             
-            if (manageDiv && snapshot.exists()) {
+            if (manageDiv) {
                 manageDiv.innerHTML = '';
                 const users = [];
-                const usersData = snapshot.val();
-                for (const [key, user] of Object.entries(usersData)) {
-                    users.push({ id: key, ...user });
-                }
+                snapshot.forEach(docSnap => users.push({ id: docSnap.id, ...docSnap.data() }));
                 
                 for (const user of users) {
                     manageDiv.innerHTML += `
                         <div class="user-item">
                             <div>
-                                <strong>${escapeHtml(user.name || user.email.split('@')[0])}</strong><br>
-                                <small>${escapeHtml(user.email)}</small><br>
+                                <strong>${escapeHtml(user.name || user.id.split('@')[0])}</strong><br>
+                                <small>${escapeHtml(user.id)}</small><br>
                                 <span class="badge ${getRoleClass(user.role)}">${getRoleName(user.role)}</span>
                             </div>
                             <div>
                                 <span>⭐ ${user.xp || 0} XP</span>
-                                <button class="btn btn-outline" style="margin-left:0.5rem; padding:0.3rem 0.8rem" onclick="window.changeUserRole('${user.email}', 'promote')">⬆️ Promover</button>
-                                <button class="btn btn-outline" style="margin-left:0.5rem; padding:0.3rem 0.8rem" onclick="window.changeUserRole('${user.email}', 'demote')">⬇️ Rebaixar</button>
+                                <button class="btn btn-outline" style="margin-left:0.5rem; padding:0.3rem 0.8rem" onclick="window.changeUserRole('${user.id}', 'promote')">⬆️ Promover</button>
+                                <button class="btn btn-outline" style="margin-left:0.5rem; padding:0.3rem 0.8rem" onclick="window.changeUserRole('${user.id}', 'demote')">⬇️ Rebaixar</button>
                             </div>
                         </div>
                     `;
-                    
-                    if (targetSelect && user.email !== currentUser?.email) {
-                        targetSelect.innerHTML += `<option value="${escapeHtml(user.email)}">${escapeHtml(user.name || user.email)}</option>`;
-                    }
                 }
             }
         } catch (error) {
@@ -981,20 +940,20 @@
         }
         
         try {
-            const userRef = ref(db, `users/${email.replace(/\./g, ',')}`);
-            const snapshot = await get(userRef);
-            const currentRole = snapshot.val()?.role || 'aluno';
+            const userRef = doc(db, "users", email);
+            const userDoc = await getDoc(userRef);
+            const currentRole = userDoc.data()?.role || 'aluno';
             
             const roleHierarchy = ['aluno', 'professor', 'admin', 'diretor'];
             let currentIndex = roleHierarchy.indexOf(currentRole);
             
             if (action === 'promote' && currentIndex < roleHierarchy.length - 1) {
                 const newRole = roleHierarchy[currentIndex + 1];
-                await update(userRef, { role: newRole });
+                await updateDoc(userRef, { role: newRole });
                 showToast(`✅ ${email} agora é ${getRoleName(newRole)}`);
             } else if (action === 'demote' && currentIndex > 0) {
                 const newRole = roleHierarchy[currentIndex - 1];
-                await update(userRef, { role: newRole });
+                await updateDoc(userRef, { role: newRole });
                 showToast(`✅ ${email} agora é ${getRoleName(newRole)}`);
             } else {
                 showToast(`Não é possível ${action === 'promote' ? 'promover' : 'rebaixar'} este usuário`, true);
@@ -1002,8 +961,8 @@
             
             await loadUsersList();
             if (email === currentUser.email) {
-                const userData = await loadUserFromRTDB(email);
-                currentUserRole = userData.role;
+                const newData = await loadUserFromFirestore(email);
+                currentUserRole = newData.role;
                 const roleBadge = document.getElementById('roleBadge');
                 if (roleBadge) {
                     roleBadge.innerHTML = getRoleName(currentUserRole);
@@ -1011,8 +970,8 @@
                 }
                 const adminTrigger = document.getElementById('adminTriggerBtn');
                 if (adminTrigger) {
-                    const isStaff = currentUserRole === 'admin' || currentUserRole === 'diretor' || currentUserRole === 'professor';
-                    adminTrigger.classList.toggle('hidden', !isStaff);
+                    const isAdmin = currentUserRole === 'admin' || currentUserRole === 'diretor' || currentUserRole === 'professor';
+                    adminTrigger.classList.toggle('hidden', !isAdmin);
                 }
                 const adminPanel = document.getElementById('adminPanel');
                 if (adminPanel) {
@@ -1026,7 +985,7 @@
     
     async function openProfile() {
         if (!currentUser) return;
-        const userData = await loadUserFromRTDB(currentUser.email);
+        const userData = await loadUserFromFirestore(currentUser.email);
         const profileContent = document.getElementById('profileContent');
         if (profileContent) {
             profileContent.innerHTML = `
@@ -1045,8 +1004,7 @@
     document.getElementById('saveProfileBtn')?.addEventListener('click', async () => {
         const name = document.getElementById('profileName')?.value;
         if (name && currentUser) {
-            const userRef = ref(db, `users/${currentUser.email.replace(/\./g, ',')}`);
-            await update(userRef, { name });
+            await updateDoc(doc(db, "users", currentUser.email), { name });
             showToast('Perfil atualizado!');
         }
         document.getElementById('profileModal').style.display = 'none';
@@ -1065,7 +1023,7 @@
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             currentUser = user;
-            const userData = await loadUserFromRTDB(user.email);
+            const userData = await loadUserFromFirestore(user.email);
             currentUserRole = userData.role;
             currentUserXP = userData.xp || 0;
             
@@ -1160,8 +1118,7 @@
                 showToast(`Bem-vindo(a)!`);
             } else {
                 const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                const userRef = ref(db, `users/${email.replace(/\./g, ',')}`);
-                await set(userRef, {
+                await setDoc(doc(db, "users", email), {
                     email: email,
                     role: 'aluno',
                     xp: 0,
@@ -1210,28 +1167,9 @@
         });
     });
     
-    // Script para verificar e usar admin existente do Realtime Database
-    async function checkExistingAdmin() {
-        try {
-            const adminRef = ref(db, 'admin-users');
-            const snapshot = await get(adminRef);
-            if (snapshot.exists()) {
-                const admins = snapshot.val();
-                console.log("✅ Admins encontrados no banco:", Object.keys(admins));
-                for (const [key, admin] of Object.entries(admins)) {
-                    console.log(`Admin: ${admin.email}`);
-                }
-            }
-        } catch (error) {
-            console.error("Erro ao verificar admins:", error);
-        }
-    }
-    
-    checkExistingAdmin();
-    
-    console.log('🔥 Sistema pronto com Realtime Database!');
-    console.log('✅ Use o email: liebebrr@gmail.com para fazer login');
-    console.log('✅ Se for admin, o botão 👑 aparecerá automaticamente');
+    console.log('🔥 Sistema pronto e seguro!');
+    console.log('✅ Apenas administradores podem acessar o painel de controle');
+    console.log('✅ Botão de admin só aparece para quem tem permissão');
 </script>
 </body>
 </html>
