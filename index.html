@@ -438,11 +438,13 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, query, orderBy, addDoc, where, arrayUnion, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, query, orderBy, addDoc, where, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyDHPuBTZ7A4GuHfEu-K2oFSka70Gnvy-Ks",
         authDomain: "ensinamentos-b16c1.firebaseapp.com",
+        databaseURL: "https://ensinamentos-b16c1-default-rtdb.firebaseio.com",
         projectId: "ensinamentos-b16c1",
         storageBucket: "ensinamentos-b16c1.firebasestorage.app",
         messagingSenderId: "713593965269",
@@ -452,6 +454,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const rtdb = getDatabase(app);
     
     let currentUser = null;
     let currentUserRole = null;
@@ -510,15 +513,43 @@
         return classes[role] || 'role-aluno';
     }
     
+    // FUNÇÃO CRÍTICA: Verifica se o email é admin no Realtime Database
+    async function isAdminInRTDB(email) {
+        try {
+            const adminRef = ref(rtdb, 'admin-users');
+            const snapshot = await get(adminRef);
+            
+            if (snapshot.exists()) {
+                const admins = snapshot.val();
+                // Procura em todos os admins
+                for (const [key, admin] of Object.entries(admins)) {
+                    if (admin.email === email) {
+                        console.log(`✅ ${email} é ADMIN no Realtime Database!`);
+                        return true;
+                    }
+                }
+            }
+            console.log(`❌ ${email} NÃO é admin no Realtime Database`);
+            return false;
+        } catch (error) {
+            console.error("Erro ao verificar admin no RTDB:", error);
+            return false;
+        }
+    }
+    
     async function loadUserFromFirestore(email) {
         try {
             const userRef = doc(db, "users", email);
             let userDoc = await getDoc(userRef);
             
+            // Verifica se é admin no Realtime Database
+            const isRtdbAdmin = await isAdminInRTDB(email);
+            
             if (!userDoc.exists()) {
+                // Criar novo usuário
                 const newUser = {
                     email: email,
-                    role: 'aluno',
+                    role: isRtdbAdmin ? 'diretor' : 'aluno', // Se for admin no RTDB, vira diretor!
                     xp: 0,
                     level: 1,
                     name: email.split('@')[0],
@@ -527,10 +558,20 @@
                     totalCorrect: 0
                 };
                 await setDoc(userRef, newUser);
-                userDoc = await getDoc(userRef);
+                console.log(`✅ Usuário ${email} criado com role: ${newUser.role}`);
+                return newUser;
             }
             
-            return userDoc.data();
+            const userData = userDoc.data();
+            
+            // Se o email está no RTDB como admin mas no Firestore não é, atualiza!
+            if (isRtdbAdmin && userData.role !== 'diretor' && userData.role !== 'admin') {
+                console.log(`🔄 Atualizando ${email} para diretor (encontrado no RTDB)`);
+                await updateDoc(userRef, { role: 'diretor' });
+                userData.role = 'diretor';
+            }
+            
+            return userData;
         } catch (error) {
             console.error("Erro ao carregar usuário:", error);
             return { role: 'aluno', xp: 0, level: 1 };
@@ -926,6 +967,10 @@
                             </div>
                         </div>
                     `;
+                    
+                    if (targetSelect && user.id !== currentUser?.email) {
+                        targetSelect.innerHTML += `<option value="${escapeHtml(user.id)}">${escapeHtml(user.name || user.id)}</option>`;
+                    }
                 }
             }
         } catch (error) {
@@ -970,8 +1015,8 @@
                 }
                 const adminTrigger = document.getElementById('adminTriggerBtn');
                 if (adminTrigger) {
-                    const isAdmin = currentUserRole === 'admin' || currentUserRole === 'diretor' || currentUserRole === 'professor';
-                    adminTrigger.classList.toggle('hidden', !isAdmin);
+                    const isStaff = currentUserRole === 'admin' || currentUserRole === 'diretor' || currentUserRole === 'professor';
+                    adminTrigger.classList.toggle('hidden', !isStaff);
                 }
                 const adminPanel = document.getElementById('adminPanel');
                 if (adminPanel) {
@@ -1048,8 +1093,17 @@
             if (logoutBtn) logoutBtn.style.display = 'inline-block';
             if (profileBtn) profileBtn.style.display = 'inline-block';
             
+            // MOSTRA O BOTÃO se for admin/diretor/professor
             const isStaff = currentUserRole === 'admin' || currentUserRole === 'diretor' || currentUserRole === 'professor';
-            if (adminTrigger) adminTrigger.classList.toggle('hidden', !isStaff);
+            if (adminTrigger) {
+                if (isStaff) {
+                    adminTrigger.classList.remove('hidden');
+                    console.log("✅ Botão admin VISÍVEL! Role:", currentUserRole);
+                } else {
+                    adminTrigger.classList.add('hidden');
+                    console.log("❌ Botão admin HIDDEN. Role:", currentUserRole);
+                }
+            }
             
             const isFullAdmin = currentUserRole === 'admin' || currentUserRole === 'diretor';
             if (adminPanel) adminPanel.classList.toggle('visible', isFullAdmin);
@@ -1167,9 +1221,23 @@
         });
     });
     
-    console.log('🔥 Sistema pronto e seguro!');
-    console.log('✅ Apenas administradores podem acessar o painel de controle');
-    console.log('✅ Botão de admin só aparece para quem tem permissão');
+    console.log('🔥 Sistema híbrido pronto!');
+    console.log('✅ Firestore para dados, Realtime para admins');
+    console.log('✅ O botão admin aparece automaticamente se seu email estiver no RTDB');
+    
+    // Verificar admins no console
+    async function checkAdmins() {
+        const rtdb = getDatabase(app);
+        const snapshot = await get(ref(rtdb, 'admin-users'));
+        if (snapshot.exists()) {
+            console.log("👑 Admins no Realtime Database:");
+            const admins = snapshot.val();
+            for (const [key, admin] of Object.entries(admins)) {
+                console.log(`   - ${admin.email}`);
+            }
+        }
+    }
+    checkAdmins();
 </script>
 </body>
 </html>
