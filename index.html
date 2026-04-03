@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Variados aos Estudos | Sistema de Aprendizagem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #1e293b;
+        }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-radius: 60px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .logo span { font-size: 0.8rem; color: #64748b; }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .xp-bar {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .role-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        
+        .role-aluno { background: #10b981; color: white; }
+        .role-professor { background: #3b82f6; color: white; }
+        .role-admin { background: #ef4444; color: white; }
+        .role-diretor { background: #8b5cf6; color: white; }
+        
+        .btn {
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
+        .btn-outline { background: transparent; border: 2px solid #667eea; color: #667eea; }
+        .btn-outline:hover { background: #667eea; color: white; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem;
+            border-radius: 60px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 0.8rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 40px;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .tab:hover { background: rgba(255,255,255,0.2); }
+        .tab.active { background: white; color: #667eea; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .panel {
+            background: white;
+            border-radius: 32px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .tasks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .task-card {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .task-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        .task-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .task-meta { font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem; }
+        .task-time { font-size: 0.7rem; color: #94a3b8; margin-top: 0.5rem; }
+        
+        .question-item {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .alternative {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem;
+            border-radius: 16px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+        
+        .alternative:hover { background: #f1f5f9; }
+        .alternative.selected { background: #ede9fe; border-color: #8b5cf6; }
+        .alternative-letter {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e2e8f0;
+            border-radius: 50%;
+            font-weight: 700;
+        }
+        .alternative.selected .alternative-letter { background: #8b5cf6; color: white; }
+        
+        .feedback {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 16px;
+        }
+        
+        .feedback.correct { background: #d1fae5; color: #059669; }
+        .feedback.incorrect { background: #fee2e2; color: #dc2626; }
+        
+        .answer-input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            font-family: inherit;
+        }
+        
+        .admin-panel { display: none; }
+        .admin-panel.visible { display: block; }
+        
+        .admin-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 999;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .admin-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.5);
+        }
+        
+        .admin-btn.hidden { display: none; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(6px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 2rem;
+            border-radius: 32px;
+        }
+        
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            left: 20px;
+            background: #1e293b;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 40px;
+            z-index: 1100;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        label { font-weight: 600; display: block; margin-bottom: 0.5rem; color: #1e293b; }
+        input, textarea, select {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .password-wrapper input {
+            flex: 1;
+            padding-right: 40px;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            cursor: pointer;
+            color: #667eea;
+        }
+        
+        .alternative-input {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .alternative-input span { width: 30px; font-weight: 700; }
+        .alternative-input input { flex: 1; }
+        
+        hr { margin: 1.5rem 0; border: none; border-top: 2px solid #e2e8f0; }
+        
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .user-item:last-child { border-bottom: none; }
+        
+        .rank-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem;
+            background: #f8fafc;
+            border-radius: 16px;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .tabs { flex-direction: column; border-radius: 20px; }
+            .tasks-grid { grid-template-columns: 1fr; }
+            .header { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .badge-admin { background: #ef4444; color: white; }
+        .badge-professor { background: #3b82f6; color: white; }
+        .badge-diretor { background: #8b5cf6; color: white; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="logo">
+            <h1>📚 Variados aos Estudos</h1>
+            <span>Sistema de Aprendizagem Inteligente</span>
+        </div>
+        <div class="user-info" id="userInfo">
+            <div class="xp-bar" id="xpBar" style="display: none;">
+                <i class="fas fa-star"></i>
+                <span id="xpPoints">0 XP</span>
+            </div>
+            <span id="roleBadge" class="role-badge"></span>
+            <span id="userEmailDisplay"></span>
+            <button id="profileBtn" class="btn btn-outline" style="display: none;"><i class="fas fa-user"></i> Perfil</button>
+            <button id="loginBtn" class="btn btn-primary">Entrar</button>
+            <button id="logoutBtn" class="btn btn-outline" style="display: none;">Sair</button>
+        </div>
+    </div>
+    
+    <div class="tabs" id="tabs">
+        <div class="tab active" data-tab="questions">📝 Questões</div>
+        <div class="tab" data-tab="tasks">📋 Tarefas</div>
+        <div class="tab" data-tab="completed">✅ Concluídas</div>
+        <div class="tab" data-tab="ranking">🏆 Ranking</div>
+    </div>
+    
+    <div id="tab-questions" class="tab-content active"><div class="panel"><div class="section-title">📚 Banco de Questões</div><div id="questionsList" class="loading">Carregando questões...</div></div></div>
+    <div id="tab-tasks" class="tab-content"><div class="panel"><div class="section-title">📋 Tarefas Pendentes</div><div id="pendingTasksList" class="tasks-grid"><div class="loading">Carregando tarefas...</div></div></div></div>
+    <div id="tab-completed" class="tab-content"><div class="panel"><div class="section-title">✅ Tarefas Concluídas</div><div id="completedTasksList" class="tasks-grid"><div class="loading">Carregando...</div></div></div></div>
+    <div id="tab-ranking" class="tab-content"><div class="panel"><div class="section-title">🏆 Ranking de Alunos</div><div id="rankingList" class="loading">Carregando ranking...</div></div></div>
+    
+    <div id="adminPanel" class="admin-panel panel">
+        <div class="section-title"><i class="fas fa-crown"></i> 👑 Painel Administrativo</div>
+        
+        <h3><i class="fas fa-plus-circle"></i> Criar Nova Questão</h3>
+        <div class="form-group"><label>Tipo de Questão</label><select id="questionType"><option value="multiple">Múltipla Escolha</option><option value="written">Resposta Escrita</option></select></div>
+        <div class="form-group"><label>Pergunta</label><input type="text" id="questionText" placeholder="Digite a pergunta"></div>
+        <div class="form-group"><label>Imagem (URL opcional)</label><input type="text" id="imageUrl" placeholder="https://exemplo.com/imagem.jpg"></div>
+        <div id="alternativesContainer" style="display:none">
+            <div class="alternative-input"><span>A)</span><input type="text" id="altA" placeholder="Alternativa A"></div>
+            <div class="alternative-input"><span>B)</span><input type="text" id="altB" placeholder="Alternativa B"></div>
+            <div class="alternative-input"><span>C)</span><input type="text" id="altC" placeholder="Alternativa C"></div>
+            <div class="alternative-input"><span>D)</span><input type="text" id="altD" placeholder="Alternativa D"></div>
+            <div class="form-group"><label>Alternativa Correta</label><select id="correctAlternative"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>
+        </div>
+        <div id="writtenContainer"><div class="form-group"><label>Resposta Correta</label><input type="text" id="correctAnswer" placeholder="Digite a resposta correta"></div></div>
+        <div class="form-group"><label>Categoria</label><select id="taskCategory"><option>Matemática</option><option>Português</option><option>Ciências</option><option>História</option><option>Geografia</option><option>Inglês</option></select></div>
+        <button id="createQuestionBtn" class="btn btn-primary">➕ Criar Questão</button>
+        
+        <hr>
+        
+        <h3><i class="fas fa-tasks"></i> Criar Nova Tarefa</h3>
+        <div class="form-group"><label>Título da Tarefa</label><input type="text" id="taskTitle" placeholder="Ex: Exercício de Matemática"></div>
+        <div class="form-group"><label>Descrição</label><textarea id="taskDesc" rows="2" placeholder="Descreva a tarefa..."></textarea></div>
+        <div class="form-group"><label>Enviar para</label><select id="targetUsers" multiple style="height:100px"></select></div>
+        <div class="form-group"><label>Quantidade de Questões</label><input type="number" id="questionsCount" value="3" min="1" max="10"></div>
+        <button id="createTaskBtn" class="btn btn-primary">📤 Criar Tarefa</button>
+        
+        <hr>
+        
+        <h3><i class="fas fa-users"></i> Gerenciar Usuários</h3>
+        <div id="usersManageList" class="loading">Carregando usuários...</div>
+    </div>
+</div>
+
+<button id="adminTriggerBtn" class="admin-btn hidden">
+    <i class="fas fa-crown"></i>
+</button>
+
+<div id="profileModal" class="modal"><div class="modal-content"><h2>👤 Meu Perfil</h2><div id="profileContent"></div><button id="saveProfileBtn" class="btn btn-primary" style="width:100%">Salvar</button><button id="closeProfileModal" style="margin-top:1rem; width:100%" class="btn btn-outline">Fechar</button></div></div>
+<div id="taskModal" class="modal"><div class="modal-content"><h2 id="modalTaskTitle"></h2><div id="modalTaskQuestions"></div><button id="submitTaskBtn" class="btn btn-success" style="width:100%; margin-top:1rem">✅ Entregar Tarefa</button><button id="closeTaskModal2" class="btn btn-outline" style="width:100%; margin-top:0.5rem">Fechar</button></div></div>
+<div id="authModal" class="modal"><div class="modal-content"><span id="closeAuthModal" style="float:right; font-size:1.7rem; cursor:pointer">&times;</span><h2 id="authTitle">Entrar</h2><form id="authForm"><div class="form-group"><label>Email</label><input type="email" id="authEmail" required></div><div class="form-group"><label>Senha</label><div class="password-wrapper"><input type="password" id="authPassword" required><i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility()"></i></div></div><button type="submit" class="btn btn-primary" style="width:100%">Entrar</button><button type="button" id="switchAuthBtn" class="btn btn-outline" style="width:100%; margin-top:10px">Criar Conta</button></form><p id="authErrorMsg" style="color:red; margin-top:10px"></p></div></div>
+<div id="toastMsg" class="toast-msg"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, query, orderBy, addDoc, where, arrayUnion, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyDHPuBTZ7A4GuHfEu-K2oFSka70Gnvy-Ks",
+        authDomain: "ensinamentos-b16c1.firebaseapp.com",
+        projectId: "ensinamentos-b16c1",
+        storageBucket: "ensinamentos-b16c1.firebasestorage.app",
+        messagingSenderId: "713593965269",
+        appId: "1:713593965269:web:d4338ff0e6753e9fe6b05c"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    let currentUser = null;
+    let currentUserRole = null;
+    let currentUserXP = 0;
+    let allQuestions = [];
+    let taskAnswers = {};
+    let currentTaskId = null;
+    let currentTaskQuestions = [];
+    
+    window.togglePasswordVisibility = () => {
+        const passwordInput = document.getElementById('authPassword');
+        const icon = document.querySelector('.toggle-password');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    };
+    
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('toastMsg');
+        toast.textContent = msg;
+        toast.style.backgroundColor = isError ? '#ef4444' : '#10b981';
+        toast.style.opacity = '1';
+        setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+    }
+    
+    function escapeHtml(str) { 
+        if (!str) return ''; 
+        return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+    }
+    
+    function formatTimeAgo(date) {
+        if (!date) return 'agora';
+        const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+        if (seconds < 60) return `há ${seconds} segundos`;
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `há ${minutes} minutos`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `há ${hours} horas`;
+        const days = Math.floor(hours / 24);
+        return `há ${days} dias`;
+    }
+    
+    function getRoleName(role) {
+        const names = { 'aluno': '👨‍🎓 Aluno', 'professor': '👨‍🏫 Professor', 'admin': '👑 Admin', 'diretor': '⭐ Diretor' };
+        return names[role] || '👨‍🎓 Aluno';
+    }
+    
+    function getRoleClass(role) {
+        const classes = { 'aluno': 'role-aluno', 'professor': 'role-professor', 'admin': 'role-admin', 'diretor': 'role-diretor' };
+        return classes[role] || 'role-aluno';
+    }
+    
+    async function loadUserFromFirestore(email) {
+        try {
+            const userRef = doc(db, "users", email);
+            let userDoc = await getDoc(userRef);
+            
+            if (!userDoc.exists()) {
+                const newUser = {
+                    email: email,
+                    role: 'aluno',
+                    xp: 0,
+                    level: 1,
+                    name: email.split('@')[0],
+                    createdAt: new Date().toISOString(),
+                    totalQuestionsAnswered: 0,
+                    totalCorrect: 0
+                };
+                await setDoc(userRef, newUser);
+                userDoc = await getDoc(userRef);
+            }
+            
+            return userDoc.data();
+        } catch (error) {
+            console.error("Erro ao carregar usuário:", error);
+            return { role: 'aluno', xp: 0, level: 1 };
+        }
+    }
+    
+    async function addXP(amount) {
+        if (!currentUser) return;
+        try {
+            const userRef = doc(db, "users", currentUser.email);
+            const userDoc = await getDoc(userRef);
+            const currentXP = (userDoc.data()?.xp || 0) + amount;
+            const newLevel = Math.floor(currentXP / 100) + 1;
+            await updateDoc(userRef, { xp: currentXP, level: newLevel });
+            currentUserXP = currentXP;
+            const xpElement = document.getElementById('xpPoints');
+            if (xpElement) xpElement.innerHTML = `${currentXP} XP`;
+            showToast(`+${amount} XP! 🎉`);
+        } catch (error) {
+            console.error("Erro ao adicionar XP:", error);
+        }
+    }
+    
+    async function loadAllQuestions() {
+        try {
+            const q = query(collection(db, "questions"), orderBy("createdAt", "desc"));
+            const snapshot = await getDocs(q);
+            allQuestions = [];
+            snapshot.forEach(docSnap => allQuestions.push({ id: docSnap.id, ...docSnap.data() }));
+            renderQuestionsList();
+        } catch (error) {
+            console.error("Erro ao carregar questões:", error);
+            document.getElementById('questionsList').innerHTML = '<div class="loading">❌ Erro ao carregar questões</div>';
+        }
+    }
+    
+    function renderQuestionsList() {
+        const container = document.getElementById('questionsList');
+        if (!container) return;
+        
+        if (allQuestions.length === 0) {
+            container.innerHTML = '<div class="loading">📭 Nenhuma questão cadastrada ainda.</div>';
+            return;
+        }
+        
+        container.innerHTML = allQuestions.map(q => `
+            <div class="question-item">
+                <div style="font-weight:700; margin-bottom:0.5rem">❓ ${escapeHtml(q.questionText)}</div>
+                ${q.imageUrl ? `<img src="${escapeHtml(q.imageUrl)}" style="max-width:100%; max-height:150px; border-radius:12px; margin-bottom:0.5rem">` : ''}
+                ${q.type === 'multiple' ? `
+                    <div id="alts-${q.id}">
+                        ${['A','B','C','D'].map(l => q.alternatives?.[l] ? `<div class="alternative" onclick="window.selectAlternative('${q.id}','${l}')"><div class="alternative-letter">${l}</div><div>${escapeHtml(q.alternatives[l])}</div></div>` : '').join('')}
+                    </div>
+                    <button class="btn btn-primary" onclick="window.checkMultipleAnswer('${q.id}','${q.correctAnswer}')">Verificar Resposta</button>
+                ` : `
+                    <input type="text" id="ans-${q.id}" class="answer-input" placeholder="Digite sua resposta">
+                    <button class="btn btn-primary" onclick="window.checkWrittenAnswer('${q.id}','${escapeHtml(q.correctAnswer).replace(/'/g, "\\'")}')" style="margin-top:0.5rem">Verificar Resposta</button>
+                `}
+                <div id="fb-${q.id}" class="feedback"></div>
+            </div>
+        `).join('');
+    }
+    
+    window.selectedAnswers = {};
+    window.selectAlternative = (id, letter) => {
+        const container = document.getElementById(`alts-${id}`);
+        if (!container) return;
+        container.querySelectorAll('.alternative').forEach(a => a.classList.remove('selected'));
+        const selected = Array.from(container.querySelectorAll('.alternative')).find(a => a.querySelector('.alternative-letter')?.innerText === letter);
+        if (selected) selected.classList.add('selected');
+        window.selectedAnswers[id] = letter;
+    };
+    
+    window.checkMultipleAnswer = async (id, correct) => {
+        const selected = window.selectedAnswers[id];
+        const fb = document.getElementById(`fb-${id}`);
+        if (!selected) {
+            fb.innerHTML = '❌ Selecione uma alternativa primeiro';
+            fb.className = 'feedback incorrect';
+            return;
+        }
+        if (selected === correct) {
+            fb.innerHTML = '✅ Correta! +10 XP';
+            fb.className = 'feedback correct';
+            await addXP(10);
+        } else {
+            fb.innerHTML = `❌ Incorreta! A resposta correta é: ${correct}`;
+            fb.className = 'feedback incorrect';
+        }
+    };
+    
+    window.checkWrittenAnswer = async (id, correct) => {
+        const input = document.getElementById(`ans-${id}`);
+        const answer = input?.value.trim().toLowerCase() || '';
+        const fb = document.getElementById(`fb-${id}`);
+        if (answer === correct.toLowerCase()) {
+            fb.innerHTML = '✅ Correta! +10 XP';
+            fb.className = 'feedback correct';
+            await addXP(10);
+        } else {
+            fb.innerHTML = `❌ Incorreta! A resposta correta é: ${escapeHtml(correct)}`;
+            fb.className = 'feedback incorrect';
+        }
+    };
+    
+    async function loadUserTasks() {
+        if (!currentUser) return;
+        try {
+            const tasksRef = collection(db, "tasks");
+            const q = query(tasksRef, where("targetUsers", "array-contains", currentUser.email));
+            const snapshot = await getDocs(q);
+            const tasks = [];
+            snapshot.forEach(docSnap => tasks.push({ id: docSnap.id, ...docSnap.data() }));
+            
+            const pending = tasks.filter(t => !t.completedBy?.includes(currentUser.email));
+            const completed = tasks.filter(t => t.completedBy?.includes(currentUser.email));
+            
+            const pendingContainer = document.getElementById('pendingTasksList');
+            const completedContainer = document.getElementById('completedTasksList');
+            
+            if (pendingContainer) {
+                pendingContainer.innerHTML = pending.length === 0 ?
+                    '<div class="loading">🎉 Nenhuma tarefa pendente!</div>' :
+                    pending.map(t => `
+                        <div class="task-card" onclick="window.openTaskModal('${t.id}','${escapeHtml(t.title)}',${JSON.stringify(t.questions).replace(/"/g, '&quot;')}, '${t.createdAt}')">
+                            <div class="task-title">${escapeHtml(t.title)}</div>
+                            <div class="task-meta">${t.category || 'Geral'} • ${t.questions?.length || 0} questões</div>
+                            <div class="task-time"><i class="far fa-clock"></i> ${formatTimeAgo(t.createdAt)}</div>
+                        </div>
+                    `).join('');
+            }
+            
+            if (completedContainer) {
+                completedContainer.innerHTML = completed.length === 0 ?
+                    '<div class="loading">📭 Nenhuma tarefa concluída ainda</div>' :
+                    completed.map(t => `
+                        <div class="task-card">
+                            <div class="task-title">${escapeHtml(t.title)}</div>
+                            <div class="task-meta">${t.category || 'Geral'} • ${t.questions?.length || 0} questões</div>
+                            <div class="task-time"><i class="fas fa-check-circle" style="color:#10b981"></i> Concluída ${formatTimeAgo(t.completedAt || t.createdAt)}</div>
+                        </div>
+                    `).join('');
+            }
+        } catch (error) {
+            console.error("Erro ao carregar tarefas:", error);
+        }
+    }
+    
+    window.openTaskModal = (id, title, questions, createdAt) => {
+        const modalTitle = document.getElementById('modalTaskTitle');
+        const modalQuestions = document.getElementById('modalTaskQuestions');
+        
+        if (modalTitle) modalTitle.innerHTML = `${title} <span style="font-size:0.8rem; color:#64748b;">(${formatTimeAgo(createdAt)})</span>`;
+        
+        if (modalQuestions) {
+            modalQuestions.innerHTML = questions.map((q, idx) => `
+                <div style="margin-bottom:1rem; padding:1rem; background:#f8fafc; border-radius:16px">
+                    <div><strong>${idx+1}. ${escapeHtml(q.questionText)}</strong></div>
+                    ${q.imageUrl ? `<img src="${escapeHtml(q.imageUrl)}" style="max-width:100%; max-height:100px; border-radius:8px; margin:0.5rem 0">` : ''}
+                    ${q.type === 'multiple' ? `
+                        <div id="task-alt-${idx}">
+                            ${['A','B','C','D'].map(l => q.alternatives?.[l] ? `<div class="alternative" onclick="window.selectTaskAlternative(${idx},'${l}')"><div class="alternative-letter">${l}</div><div>${escapeHtml(q.alternatives[l])}</div></div>` : '').join('')}
+                        </div>
+                    ` : `<input type="text" id="task-ans-${idx}" class="answer-input" placeholder="Digite sua resposta">`}
+                    <div id="task-fb-${idx}" class="feedback"></div>
+                </div>
+            `).join('');
+        }
+        
+        currentTaskId = id;
+        currentTaskQuestions = questions;
+        taskAnswers = {};
+        document.getElementById('taskModal').style.display = 'flex';
+    };
+    
+    window.selectTaskAlternative = (idx, letter) => {
+        const container = document.getElementById(`task-alt-${idx}`);
+        if (!container) return;
+        container.querySelectorAll('.alternative').forEach(a => a.classList.remove('selected'));
+        const selected = Array.from(container.querySelectorAll('.alternative')).find(a => a.querySelector('.alternative-letter')?.innerText === letter);
+        if (selected) selected.classList.add('selected');
+        taskAnswers[idx] = letter;
+    };
+    
+    async function submitTask() {
+        let allCorrect = true;
+        let correctCount = 0;
+        
+        for (let i = 0; i < currentTaskQuestions.length; i++) {
+            const q = currentTaskQuestions[i];
+            let isCorrect = false;
+            
+            if (q.type === 'multiple') {
+                const answer = taskAnswers[i];
+                isCorrect = answer === q.correctAnswer;
+            } else {
+                const input = document.getElementById(`task-ans-${i}`);
+                isCorrect = input?.value.trim().toLowerCase() === q.correctAnswer.toLowerCase();
+            }
+            
+            if (isCorrect) correctCount++;
+            else allCorrect = false;
+            
+            const fb = document.getElementById(`task-fb-${i}`);
+            if (fb) {
+                fb.innerHTML = isCorrect ? '✅ Correta!' : `❌ Incorreta! Resposta: ${escapeHtml(q.correctAnswer)}`;
+                fb.className = isCorrect ? 'feedback correct' : 'feedback incorrect';
+            }
+        }
+        
+        if (allCorrect && correctCount === currentTaskQuestions.length) {
+            try {
+                await updateDoc(doc(db, "tasks", currentTaskId), {
+                    completedBy: arrayUnion(currentUser.email),
+                    completedAt: new Date().toISOString()
+                });
+                await addXP(currentTaskQuestions.length * 15);
+                showToast(`🎉 Tarefa concluída! +${currentTaskQuestions.length * 15} XP`);
+                document.getElementById('taskModal').style.display = 'none';
+                await loadUserTasks();
+                await loadRanking();
+                taskAnswers = {};
+            } catch (error) {
+                showToast("Erro ao entregar tarefa: " + error.message, true);
+            }
+        } else {
+            showToast(`❌ Você acertou ${correctCount}/${currentTaskQuestions.length}. É necessário acertar todas as questões!`, true);
+        }
+    }
+    
+    async function loadRanking() {
+        try {
+            const snapshot = await getDocs(collection(db, "users"));
+            const users = [];
+            snapshot.forEach(docSnap => users.push({ email: docSnap.id, ...docSnap.data() }));
+            users.sort((a, b) => (b.xp || 0) - (a.xp || 0));
+            
+            const rankingContainer = document.getElementById('rankingList');
+            if (rankingContainer) {
+                rankingContainer.innerHTML = users.map((u, idx) => `
+                    <div class="rank-item">
+                        <div style="width:50px; font-size:1.5rem">${idx === 0 ? '🏆' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx+1}º`}</div>
+                        <div style="flex:1"><strong>${escapeHtml(u.name || u.email.split('@')[0])}</strong><br><small>${escapeHtml(u.email)}</small></div>
+                        <div>⭐ ${u.xp || 0} XP</div>
+                        <div>Nv ${u.level || 1}</div>
+                    </div>
+                `).join('');
+            }
+        } catch (error) {
+            console.error("Erro ao carregar ranking:", error);
+        }
+    }
+    
+    async function createQuestion() {
+        if (!currentUser) {
+            showToast("Faça login primeiro!", true);
+            return;
+        }
+        
+        const type = document.getElementById('questionType').value;
+        const text = document.getElementById('questionText').value.trim();
+        if (!text) {
+            showToast('Digite a pergunta!', true);
+            return;
+        }
+        
+        const data = {
+            questionText: text,
+            type: type,
+            createdAt: new Date().toISOString(),
+            category: document.getElementById('taskCategory').value,
+            imageUrl: document.getElementById('imageUrl').value,
+            createdBy: currentUser.email
+        };
+        
+        if (type === 'multiple') {
+            data.alternatives = {
+                A: document.getElementById('altA').value,
+                B: document.getElementById('altB').value,
+                C: document.getElementById('altC').value,
+                D: document.getElementById('altD').value
+            };
+            data.correctAnswer = document.getElementById('correctAlternative').value;
+        } else {
+            data.correctAnswer = document.getElementById('correctAnswer').value;
+        }
+        
+        try {
+            await addDoc(collection(db, "questions"), data);
+            showToast('✅ Questão criada com sucesso!');
+            document.getElementById('questionText').value = '';
+            document.getElementById('imageUrl').value = '';
+            if (type === 'multiple') {
+                document.getElementById('altA').value = '';
+                document.getElementById('altB').value = '';
+                document.getElementById('altC').value = '';
+                document.getElementById('altD').value = '';
+            } else {
+                document.getElementById('correctAnswer').value = '';
+            }
+            await loadAllQuestions();
+        } catch (error) {
+            showToast('Erro ao criar questão: ' + error.message, true);
+        }
+    }
+    
+    async function createTask() {
+        if (!currentUser) {
+            showToast("Faça login primeiro!", true);
+            return;
+        }
+        
+        const title = document.getElementById('taskTitle').value.trim();
+        if (!title) {
+            showToast('Digite um título!', true);
+            return;
+        }
+        
+        if (allQuestions.length === 0) {
+            showToast('Crie pelo menos uma questão primeiro!', true);
+            return;
+        }
+        
+        const shuffled = [...allQuestions];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        const selectedQuestions = shuffled.slice(0, parseInt(document.getElementById('questionsCount').value));
+        
+        const targetSelect = document.getElementById('targetUsers');
+        let targetUsers = Array.from(targetSelect.selectedOptions).map(opt => opt.value);
+        
+        if (targetUsers.includes('todos') || targetUsers.length === 0) {
+            const usersSnapshot = await getDocs(collection(db, "users"));
+            targetUsers = [];
+            usersSnapshot.forEach(docSnap => targetUsers.push(docSnap.id));
+        }
+        
+        try {
+            await addDoc(collection(db, "tasks"), {
+                title: title,
+                description: document.getElementById('taskDesc').value,
+                category: document.getElementById('taskCategory').value,
+                questions: selectedQuestions.map(q => ({
+                    questionText: q.questionText,
+                    type: q.type,
+                    alternatives: q.alternatives,
+                    correctAnswer: q.correctAnswer,
+                    imageUrl: q.imageUrl
+                })),
+                targetUsers: targetUsers,
+                createdBy: currentUser.email,
+                createdAt: new Date().toISOString(),
+                completedBy: []
+            });
+            showToast('✅ Tarefa criada com sucesso!');
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskDesc').value = '';
+            await loadUserTasks();
+        } catch (error) {
+            showToast('Erro ao criar tarefa: ' + error.message, true);
+        }
+    }
+    
+    async function loadUsersList() {
+        try {
+            const snapshot = await getDocs(collection(db, "users"));
+            const targetSelect = document.getElementById('targetUsers');
+            const manageDiv = document.getElementById('usersManageList');
+            
+            if (targetSelect) {
+                targetSelect.innerHTML = '<option value="todos">📢 Todos os usuários</option>';
+            }
+            
+            if (manageDiv) {
+                manageDiv.innerHTML = '';
+                const users = [];
+                snapshot.forEach(docSnap => users.push({ id: docSnap.id, ...docSnap.data() }));
+                
+                for (const user of users) {
+                    manageDiv.innerHTML += `
+                        <div class="user-item">
+                            <div>
+                                <strong>${escapeHtml(user.name || user.id.split('@')[0])}</strong><br>
+                                <small>${escapeHtml(user.id)}</small><br>
+                                <span class="badge ${getRoleClass(user.role)}">${getRoleName(user.role)}</span>
+                            </div>
+                            <div>
+                                <span>⭐ ${user.xp || 0} XP</span>
+                                <button class="btn btn-outline" style="margin-left:0.5rem; padding:0.3rem 0.8rem" onclick="window.changeUserRole('${user.id}', 'promote')">⬆️ Promover</button>
+                                <button class="btn btn-outline" style="margin-left:0.5rem; padding:0.3rem 0.8rem" onclick="window.changeUserRole('${user.id}', 'demote')">⬇️ Rebaixar</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        } catch (error) {
+            console.error("Erro ao carregar usuários:", error);
+        }
+    }
+    
+    window.changeUserRole = async (email, action) => {
+        if (!currentUser || (currentUserRole !== 'admin' && currentUserRole !== 'diretor')) {
+            showToast("Acesso negado!", true);
+            return;
+        }
+        
+        try {
+            const userRef = doc(db, "users", email);
+            const userDoc = await getDoc(userRef);
+            const currentRole = userDoc.data()?.role || 'aluno';
+            
+            const roleHierarchy = ['aluno', 'professor', 'admin', 'diretor'];
+            let currentIndex = roleHierarchy.indexOf(currentRole);
+            
+            if (action === 'promote' && currentIndex < roleHierarchy.length - 1) {
+                const newRole = roleHierarchy[currentIndex + 1];
+                await updateDoc(userRef, { role: newRole });
+                showToast(`✅ ${email} agora é ${getRoleName(newRole)}`);
+            } else if (action === 'demote' && currentIndex > 0) {
+                const newRole = roleHierarchy[currentIndex - 1];
+                await updateDoc(userRef, { role: newRole });
+                showToast(`✅ ${email} agora é ${getRoleName(newRole)}`);
+            } else {
+                showToast(`Não é possível ${action === 'promote' ? 'promover' : 'rebaixar'} este usuário`, true);
+            }
+            
+            await loadUsersList();
+            if (email === currentUser.email) {
+                const newData = await loadUserFromFirestore(email);
+                currentUserRole = newData.role;
+                const roleBadge = document.getElementById('roleBadge');
+                if (roleBadge) {
+                    roleBadge.innerHTML = getRoleName(currentUserRole);
+                    roleBadge.className = `role-badge ${getRoleClass(currentUserRole)}`;
+                }
+                const adminTrigger = document.getElementById('adminTriggerBtn');
+                if (adminTrigger) {
+                    const isAdmin = currentUserRole === 'admin' || currentUserRole === 'diretor' || currentUserRole === 'professor';
+                    adminTrigger.classList.toggle('hidden', !isAdmin);
+                }
+                const adminPanel = document.getElementById('adminPanel');
+                if (adminPanel) {
+                    adminPanel.classList.toggle('visible', currentUserRole === 'admin' || currentUserRole === 'diretor');
+                }
+            }
+        } catch (error) {
+            showToast("Erro ao alterar cargo: " + error.message, true);
+        }
+    };
+    
+    async function openProfile() {
+        if (!currentUser) return;
+        const userData = await loadUserFromFirestore(currentUser.email);
+        const profileContent = document.getElementById('profileContent');
+        if (profileContent) {
+            profileContent.innerHTML = `
+                <div class="form-group"><label>Nome</label><input type="text" id="profileName" value="${escapeHtml(userData.name || '')}"></div>
+                <div class="form-group"><label>Email</label><input type="text" value="${currentUser.email}" disabled></div>
+                <div class="form-group"><label>Cargo</label><input type="text" value="${getRoleName(userData.role)}" disabled></div>
+                <div class="form-group"><label>XP Total</label><input type="text" value="${userData.xp || 0} XP" disabled></div>
+                <div class="form-group"><label>Nível</label><input type="text" value="${userData.level || 1}" disabled></div>
+                <div class="form-group"><label>Questões Respondidas</label><input type="text" value="${userData.totalQuestionsAnswered || 0}" disabled></div>
+                <div class="form-group"><label>Taxa de Acerto</label><input type="text" value="${userData.totalCorrect && userData.totalQuestionsAnswered ? Math.round((userData.totalCorrect / userData.totalQuestionsAnswered) * 100) : 0}%" disabled></div>
+            `;
+        }
+        document.getElementById('profileModal').style.display = 'flex';
+    }
+    
+    document.getElementById('saveProfileBtn')?.addEventListener('click', async () => {
+        const name = document.getElementById('profileName')?.value;
+        if (name && currentUser) {
+            await updateDoc(doc(db, "users", currentUser.email), { name });
+            showToast('Perfil atualizado!');
+        }
+        document.getElementById('profileModal').style.display = 'none';
+    });
+    
+    document.getElementById('questionType')?.addEventListener('change', (e) => {
+        const isMultiple = e.target.value === 'multiple';
+        const altContainer = document.getElementById('alternativesContainer');
+        const writtenContainer = document.getElementById('writtenContainer');
+        if (altContainer) altContainer.style.display = isMultiple ? 'block' : 'none';
+        if (writtenContainer) writtenContainer.style.display = isMultiple ? 'none' : 'block';
+    });
+    
+    document.getElementById('submitTaskBtn')?.addEventListener('click', submitTask);
+    
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUser = user;
+            const userData = await loadUserFromFirestore(user.email);
+            currentUserRole = userData.role;
+            currentUserXP = userData.xp || 0;
+            
+            const userEmailDisplay = document.getElementById('userEmailDisplay');
+            const roleBadge = document.getElementById('roleBadge');
+            const xpBar = document.getElementById('xpBar');
+            const xpPoints = document.getElementById('xpPoints');
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const profileBtn = document.getElementById('profileBtn');
+            const adminTrigger = document.getElementById('adminTriggerBtn');
+            const adminPanel = document.getElementById('adminPanel');
+            
+            if (userEmailDisplay) userEmailDisplay.innerHTML = user.email;
+            if (roleBadge) {
+                roleBadge.innerHTML = getRoleName(currentUserRole);
+                roleBadge.className = `role-badge ${getRoleClass(currentUserRole)}`;
+            }
+            if (xpBar) xpBar.style.display = 'flex';
+            if (xpPoints) xpPoints.innerHTML = `${currentUserXP} XP`;
+            if (loginBtn) loginBtn.style.display = 'none';
+            if (logoutBtn) logoutBtn.style.display = 'inline-block';
+            if (profileBtn) profileBtn.style.display = 'inline-block';
+            
+            const isStaff = currentUserRole === 'admin' || currentUserRole === 'diretor' || currentUserRole === 'professor';
+            if (adminTrigger) adminTrigger.classList.toggle('hidden', !isStaff);
+            
+            const isFullAdmin = currentUserRole === 'admin' || currentUserRole === 'diretor';
+            if (adminPanel) adminPanel.classList.toggle('visible', isFullAdmin);
+            
+            if (isFullAdmin) {
+                await loadUsersList();
+            }
+            
+            await loadAllQuestions();
+            await loadUserTasks();
+            await loadRanking();
+        } else {
+            currentUser = null;
+            currentUserRole = null;
+            
+            const userEmailDisplay = document.getElementById('userEmailDisplay');
+            const roleBadge = document.getElementById('roleBadge');
+            const xpBar = document.getElementById('xpBar');
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const profileBtn = document.getElementById('profileBtn');
+            const adminTrigger = document.getElementById('adminTriggerBtn');
+            const adminPanel = document.getElementById('adminPanel');
+            
+            if (userEmailDisplay) userEmailDisplay.innerHTML = 'Não autenticado';
+            if (roleBadge) roleBadge.innerHTML = '';
+            if (xpBar) xpBar.style.display = 'none';
+            if (loginBtn) loginBtn.style.display = 'inline-block';
+            if (logoutBtn) logoutBtn.style.display = 'none';
+            if (profileBtn) profileBtn.style.display = 'none';
+            if (adminTrigger) adminTrigger.classList.add('hidden');
+            if (adminPanel) adminPanel.classList.remove('visible');
+            
+            await loadAllQuestions();
+        }
+    });
+    
+    const authModal = document.getElementById('authModal');
+    document.getElementById('loginBtn').onclick = () => { if (authModal) authModal.style.display = 'flex'; };
+    document.getElementById('logoutBtn').onclick = async () => { await signOut(auth); showToast('Deslogado com sucesso!'); };
+    document.getElementById('profileBtn').onclick = openProfile;
+    document.getElementById('closeAuthModal').onclick = () => { if (authModal) authModal.style.display = 'none'; };
+    document.getElementById('closeProfileModal').onclick = () => document.getElementById('profileModal').style.display = 'none';
+    document.getElementById('closeTaskModal2').onclick = () => document.getElementById('taskModal').style.display = 'none';
+    
+    window.onclick = (e) => { if (e.target === authModal && authModal) authModal.style.display = 'none'; };
+    
+    let isLogin = true;
+    document.getElementById('switchAuthBtn').onclick = () => {
+        isLogin = !isLogin;
+        const switchBtn = document.getElementById('switchAuthBtn');
+        const authTitle = document.getElementById('authTitle');
+        if (switchBtn) switchBtn.innerText = isLogin ? 'Criar Conta' : 'Voltar para Login';
+        if (authTitle) authTitle.innerText = isLogin ? 'Entrar' : 'Criar Conta';
+    };
+    
+    document.getElementById('authForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('authEmail').value;
+        const password = document.getElementById('authPassword').value;
+        const errorMsg = document.getElementById('authErrorMsg');
+        
+        try {
+            if (isLogin) {
+                await signInWithEmailAndPassword(auth, email, password);
+                showToast(`Bem-vindo(a)!`);
+            } else {
+                const userCred = await createUserWithEmailAndPassword(auth, email, password);
+                await setDoc(doc(db, "users", email), {
+                    email: email,
+                    role: 'aluno',
+                    xp: 0,
+                    level: 1,
+                    name: email.split('@')[0],
+                    createdAt: new Date().toISOString(),
+                    totalQuestionsAnswered: 0,
+                    totalCorrect: 0
+                });
+                showToast(`Conta criada com sucesso! Faça login.`);
+                await signOut(auth);
+                isLogin = true;
+                const switchBtn = document.getElementById('switchAuthBtn');
+                const authTitle = document.getElementById('authTitle');
+                if (switchBtn) switchBtn.innerText = 'Criar Conta';
+                if (authTitle) authTitle.innerText = 'Entrar';
+            }
+            if (authModal) authModal.style.display = 'none';
+            if (errorMsg) errorMsg.innerText = '';
+            document.getElementById('authEmail').value = '';
+            document.getElementById('authPassword').value = '';
+        } catch (err) {
+            if (errorMsg) errorMsg.innerText = err.message;
+        }
+    };
+    
+    document.getElementById('adminTriggerBtn').onclick = () => {
+        const adminPanel = document.getElementById('adminPanel');
+        if (adminPanel) adminPanel.classList.toggle('visible');
+    };
+    
+    document.getElementById('createQuestionBtn')?.addEventListener('click', createQuestion);
+    document.getElementById('createTaskBtn')?.addEventListener('click', createTask);
+    document.getElementById('questionType')?.dispatchEvent(new Event('change'));
+    
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            tab.classList.add('active');
+            const tabId = tab.getAttribute('data-tab');
+            const content = document.getElementById(`tab-${tabId}`);
+            if (content) content.classList.add('active');
+            if (tabId === 'ranking') loadRanking();
+            if (tabId === 'tasks') loadUserTasks();
+        });
+    });
+    
+    console.log('🔥 Sistema pronto e seguro!');
+    console.log('✅ Apenas administradores podem acessar o painel de controle');
+    console.log('✅ Botão de admin só aparece para quem tem permissão');
+</script>
+</body>
+</html>
