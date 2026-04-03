@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variados aos Estudos | Questões Personalizadas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fe 0%, #e9eefa 100%);
+            min-height: 100vh;
+            color: #1e2a3e;
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-radius: 60px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+        
+        .logo h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2b3b4e, #1a4d8c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .logo span {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .btn {
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .btn-primary { background: #2c5f8a; color: white; }
+        .btn-primary:hover { background: #1e4668; transform: scale(0.97); }
+        .btn-outline { background: transparent; border: 1px solid #2c5f8a; color: #2c5f8a; }
+        .btn-danger { background: #b13e3e; color: white; }
+        .badge-user { background: #e2e8f0; padding: 0.4rem 1rem; border-radius: 40px; font-size: 0.85rem; }
+        
+        .questions-panel {
+            background: white;
+            border-radius: 32px;
+            padding: 1.8rem;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.7rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid #2c5f8a;
+            padding-left: 1rem;
+        }
+        
+        .question-card {
+            background: #f9fafc;
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e2edf7;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .question-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 16px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+        
+        .question-text {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #1e2a3e;
+        }
+        
+        .question-type-badge {
+            display: inline-block;
+            background: #e2e8f0;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-bottom: 0.8rem;
+            color: #4b6e8a;
+        }
+        
+        .alternatives-area {
+            margin: 1rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        .alternative {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.5rem;
+            border-radius: 12px;
+            background: white;
+            border: 1px solid #e2edf7;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .alternative:hover {
+            background: #f1f5f9;
+            border-color: #2c5f8a;
+        }
+        
+        .alternative.selected {
+            background: #2c5f8a20;
+            border-color: #2c5f8a;
+        }
+        
+        .alternative-letter {
+            font-weight: 700;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e2e8f0;
+            border-radius: 50%;
+        }
+        
+        .alternative.selected .alternative-letter {
+            background: #2c5f8a;
+            color: white;
+        }
+        
+        .alternative-text {
+            flex: 1;
+        }
+        
+        .answer-area {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.7rem;
+            flex-wrap: wrap;
+        }
+        
+        .answer-input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border-radius: 60px;
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+        
+        .check-btn {
+            background: #2c5f8a;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 0.5rem 1.5rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .check-btn:hover {
+            background: #1e4668;
+        }
+        
+        .feedback {
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.5rem;
+            border-radius: 12px;
+        }
+        
+        .feedback.correct {
+            background: #15803d20;
+            color: #15803d;
+        }
+        
+        .feedback.incorrect {
+            background: #b91c1c20;
+            color: #b91c1c;
+        }
+        
+        .admin-panel {
+            display: none;
+            background: #ffffffdd;
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(44,95,138,0.3);
+        }
+        
+        .admin-panel.visible { display: block; }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        label { font-weight: 600; display: block; margin-bottom: 0.5rem; color: #1e2a3e; }
+        input, textarea, select {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 20px;
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+        
+        .alternatives-group {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 20px;
+            margin-top: 0.5rem;
+        }
+        
+        .alternative-input {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+        
+        .alternative-input span {
+            font-weight: 700;
+            width: 30px;
+        }
+        
+        .hidden-admin-btn {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            z-index: 999;
+            background: #c2410c;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+        
+        .hidden-admin-btn:hover {
+            transform: scale(1.1);
+            opacity: 0.9;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(6px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            max-width: 420px;
+            width: 90%;
+            padding: 2rem;
+            border-radius: 48px;
+        }
+        
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            left: 20px;
+            background: #1e293b;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            z-index: 1100;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        
+        .stats {
+            background: linear-gradient(135deg, #2c5f8a, #1e4668);
+            color: white;
+            padding: 1rem;
+            border-radius: 20px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        
+        .stats div {
+            flex: 1;
+        }
+        
+        .stats-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .stats-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 700px) {
+            .header { flex-direction: column; gap: 1rem; }
+            .stats { flex-direction: column; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="logo">
+            <h1>📚 Variados aos Estudos</h1>
+            <span>Questões personalizadas com alternativas</span>
+        </div>
+        <div class="user-area" id="userArea">
+            <span id="userEmailDisplay" class="badge-user">Não autenticado</span>
+            <button id="loginSignupBtn" class="btn btn-primary">Entrar</button>
+            <button id="logoutBtn" class="btn btn-outline" style="display: none;">Sair</button>
+        </div>
+    </div>
+    
+    <div class="questions-panel">
+        <div class="section-title"><i class="fas fa-puzzle-piece"></i> Questões</div>
+        <div id="stats" class="stats" style="display: none;"></div>
+        <div id="questionsList">
+            <div style="text-align:center; padding: 2rem;">Carregando questões...</div>
+        </div>
+    </div>
+    
+    <div id="adminPanel" class="admin-panel">
+        <div class="section-title"><i class="fas fa-crown"></i> Painel Admin</div>
+        <div>
+            <div class="form-group">
+                <label>📝 Tipo da Questão</label>
+                <select id="questionType">
+                    <option value="multiple">Múltipla Escolha (A, B, C, D)</option>
+                    <option value="written">Resposta Escrita</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>❓ Pergunta</label>
+                <input type="text" id="questionText" placeholder="Digite a pergunta">
+            </div>
+            
+            <div class="form-group" id="alternativesContainer" style="display: none;">
+                <label>📋 Alternativas</label>
+                <div class="alternatives-group">
+                    <div class="alternative-input">
+                        <span>A)</span>
+                        <input type="text" id="altA" placeholder="Alternativa A">
+                    </div>
+                    <div class="alternative-input">
+                        <span>B)</span>
+                        <input type="text" id="altB" placeholder="Alternativa B">
+                    </div>
+                    <div class="alternative-input">
+                        <span>C)</span>
+                        <input type="text" id="altC" placeholder="Alternativa C">
+                    </div>
+                    <div class="alternative-input">
+                        <span>D)</span>
+                        <input type="text" id="altD" placeholder="Alternativa D">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label>✅ Alternativa Correta (A, B, C ou D)</label>
+                    <select id="correctAlternative">
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group" id="writtenAnswerContainer">
+                <label>✅ Resposta Correta (para questão escrita)</label>
+                <input type="text" id="correctAnswer" placeholder="Digite a resposta correta">
+            </div>
+            
+            <div class="form-group">
+                <label>🖼️ URL da Imagem (opcional)</label>
+                <input type="text" id="imageUrl" placeholder="https://...">
+            </div>
+            
+            <button id="createQuestionBtn" class="btn btn-primary">➕ Criar Questão</button>
+            <button id="refreshBtn" class="btn btn-outline">🔄 Atualizar</button>
+            <hr style="margin: 1rem 0;">
+            <div id="adminQuestionsList"></div>
+        </div>
+    </div>
+    
+    <footer>✨ Clique no botão laranja no canto direito para acessar o painel admin</footer>
+</div>
+
+<button id="secretAdminTrigger" class="hidden-admin-btn" title="Admin">👑</button>
+
+<div id="authModal" class="modal">
+    <div class="modal-content">
+        <span id="closeAuthModal" style="float: right; font-size: 1.7rem; cursor: pointer;">&times;</span>
+        <div class="modal-header" style="font-size: 1.6rem; font-weight: 700; margin-bottom: 1.5rem;">Acessar Variados</div>
+        <form id="authForm">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="authEmail" required>
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="authPassword" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%">Entrar</button>
+            <button type="button" id="switchToSignupBtn" class="btn btn-outline" style="width:100%; margin-top:10px;">Criar Conta</button>
+        </form>
+        <p id="authErrorMsg" style="color:red; margin-top:10px;"></p>
+    </div>
+</div>
+
+<div id="toastMsg" class="toast-msg"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    
+    // Configuração
+    const firebaseConfig = {
+        apiKey: "AIzaSyDHPuBTZ7A4GuHfEu-K2oFSka70Gnvy-Ks",
+        authDomain: "ensinamentos-b16c1.firebaseapp.com",
+        projectId: "ensinamentos-b16c1",
+        storageBucket: "ensinamentos-b16c1.firebasestorage.app",
+        messagingSenderId: "713593965269",
+        appId: "1:713593965269:web:d4338ff0e6753e9fe6b05c",
+        databaseURL: "https://ensinamentos-b16c1-default-rtdb.firebaseio.com"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const rtdb = getDatabase(app);
+    
+    let currentUser = null;
+    let isAdmin = false;
+    
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('toastMsg');
+        toast.textContent = msg;
+        toast.style.backgroundColor = isError ? '#b91c1c' : '#1e4668';
+        toast.style.opacity = '1';
+        setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+    }
+    
+    function escapeHtml(str) { 
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m){
+            if(m==='&') return '&amp;'; 
+            if(m==='<') return '&lt;'; 
+            if(m==='>') return '&gt;'; 
+            return m;
+        }); 
+    }
+    
+    // Verificar admin no Realtime Database
+    async function verificarSeEAdmin(email) {
+        if (!email) return false;
+        try {
+            const dbRef = ref(rtdb);
+            const snapshot = await get(child(dbRef, 'admin-users'));
+            if (snapshot.exists()) {
+                const admins = snapshot.val();
+                for (let key in admins) {
+                    if (admins[key] && admins[key].email === email) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } catch (error) {
+            return false;
+        }
+    }
+    
+    // Alterna entre tipos de questão
+    document.getElementById('questionType')?.addEventListener('change', (e) => {
+        const isMultiple = e.target.value === 'multiple';
+        document.getElementById('alternativesContainer').style.display = isMultiple ? 'block' : 'none';
+        document.getElementById('writtenAnswerContainer').style.display = isMultiple ? 'none' : 'block';
+    });
+    
+    // Carregar questões
+    async function loadQuestions() {
+        try {
+            const q = query(collection(db, "questions"), orderBy("createdAt", "desc"));
+            const snapshot = await getDocs(q);
+            const questions = [];
+            snapshot.forEach(docSnap => {
+                questions.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            
+            if (questions.length === 0) {
+                document.getElementById('questionsList').innerHTML = '<div style="padding: 2rem; text-align:center;">✨ Nenhuma questão ainda. Faça login como admin para criar!</div>';
+                document.getElementById('stats').style.display = 'none';
+                return;
+            }
+            
+            // Estatísticas
+            document.getElementById('stats').style.display = 'flex';
+            document.getElementById('stats').innerHTML = `
+                <div><div class="stats-number">${questions.length}</div><div class="stats-label">Total de Questões</div></div>
+                <div><div class="stats-number">${questions.filter(q => q.type === 'multiple').length}</div><div class="stats-label">Múltipla Escolha</div></div>
+                <div><div class="stats-number">${questions.filter(q => q.type === 'written').length}</div><div class="stats-label">Resposta Escrita</div></div>
+            `;
+            
+            let html = '';
+            questions.forEach(q => {
+                const imageHtml = q.imageUrl ? `<img src="${escapeHtml(q.imageUrl)}" class="question-image" onerror="this.style.display='none'" onclick="window.showImageModal('${escapeHtml(q.imageUrl)}')">` : '';
+                const typeBadge = q.type === 'multiple' ? '📋 Múltipla Escolha' : '✍️ Resposta Escrita';
+                
+                html += `
+                    <div class="question-card" data-id="${q.id}">
+                        ${imageHtml}
+                        <div class="question-type-badge">${typeBadge}</div>
+                        <div class="question-text">❓ ${escapeHtml(q.questionText)}</div>
+                `;
+                
+                if (q.type === 'multiple' && q.alternatives) {
+                    html += `<div class="alternatives-area" id="alts-${q.id}">`;
+                    const letters = ['A', 'B', 'C', 'D'];
+                    letters.forEach(letter => {
+                        const altText = q.alternatives[letter];
+                        if (altText) {
+                            html += `
+                                <div class="alternative" data-letter="${letter}" onclick="selectAlternative('${q.id}', '${letter}')">
+                                    <div class="alternative-letter">${letter}</div>
+                                    <div class="alternative-text">${escapeHtml(altText)}</div>
+                                </div>
+                            `;
+                        }
+                    });
+                    html += `</div>`;
+                    html += `<div class="answer-area">
+                        <button class="check-btn" onclick="checkMultipleAnswer('${q.id}', '${escapeHtml(q.correctAnswer)}')">Verificar Resposta</button>
+                    </div>`;
+                } else {
+                    html += `<div class="answer-area">
+                        <input type="text" class="answer-input" id="ans-${q.id}" placeholder="Digite sua resposta...">
+                        <button class="check-btn" onclick="checkWrittenAnswer('${q.id}', '${escapeHtml(q.correctAnswer).replace(/'/g, "\\'")}')">Verificar</button>
+                    </div>`;
+                }
+                
+                html += `<div class="feedback" id="fb-${q.id}"></div>
+                    </div>
+                `;
+            });
+            document.getElementById('questionsList').innerHTML = html;
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    
+    // Selecionar alternativa
+    window.selectAlternative = (questionId, letter) => {
+        const container = document.getElementById(`alts-${questionId}`);
+        if (!container) return;
+        const alts = container.querySelectorAll('.alternative');
+        alts.forEach(alt => {
+            alt.classList.remove('selected');
+            if (alt.getAttribute('data-letter') === letter) {
+                alt.classList.add('selected');
+            }
+        });
+        window.selectedAlternative = { [questionId]: letter };
+    };
+    
+    // Verificar múltipla escolha
+    window.checkMultipleAnswer = (questionId, correctLetter) => {
+        const selected = window.selectedAlternative?.[questionId];
+        const fbDiv = document.getElementById(`fb-${questionId}`);
+        
+        if (!selected) {
+            fbDiv.innerHTML = '❌ Selecione uma alternativa primeiro!';
+            fbDiv.className = 'feedback incorrect';
+            return;
+        }
+        
+        if (selected === correctLetter) {
+            fbDiv.innerHTML = '✅ Correta! Parabéns!';
+            fbDiv.className = 'feedback correct';
+        } else {
+            fbDiv.innerHTML = `❌ Incorreta! A resposta correta é a alternativa ${correctLetter}.`;
+            fbDiv.className = 'feedback incorrect';
+        }
+    };
+    
+    // Verificar resposta escrita
+    window.checkWrittenAnswer = (questionId, correctAnswer) => {
+        const input = document.getElementById(`ans-${questionId}`);
+        const userAnswer = input?.value.trim().toLowerCase() || '';
+        const fbDiv = document.getElementById(`fb-${questionId}`);
+        
+        if (userAnswer === correctAnswer.toLowerCase()) {
+            fbDiv.innerHTML = '✅ Correta! Parabéns!';
+            fbDiv.className = 'feedback correct';
+        } else {
+            fbDiv.innerHTML = `❌ Incorreta! A resposta correta é: ${escapeHtml(correctAnswer)}`;
+            fbDiv.className = 'feedback incorrect';
+        }
+    };
+    
+    window.showImageModal = (url) => {
+        const modal = document.createElement('div');
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.background = 'rgba(0,0,0,0.9)';
+        modal.style.display = 'flex';
+        modal.style.justifyContent = 'center';
+        modal.style.alignItems = 'center';
+        modal.style.zIndex = '9999';
+        modal.style.cursor = 'pointer';
+        modal.innerHTML = `<img src="${url}" style="max-width: 90%; max-height: 90%; border-radius: 16px;">`;
+        modal.onclick = () => modal.remove();
+        document.body.appendChild(modal);
+    };
+    
+    // Carregar questões admin
+    async function loadAdminQuestions() {
+        if (!isAdmin) return;
+        try {
+            const q = query(collection(db, "questions"), orderBy("createdAt", "desc"));
+            const snapshot = await getDocs(q);
+            if (snapshot.empty) {
+                document.getElementById('adminQuestionsList').innerHTML = '<p>Nenhuma questão cadastrada</p>';
+                return;
+            }
+            let html = '';
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                html += `
+                    <div style="background:#f1f5f9; border-radius:20px; padding:1rem; margin-bottom:10px;">
+                        <strong>${escapeHtml(data.questionText)}</strong><br>
+                        <span style="font-size:0.85rem;">Tipo: ${data.type === 'multiple' ? 'Múltipla Escolha' : 'Resposta Escrita'}</span><br>
+                        <button class="delete-q" data-id="${docSnap.id}" style="background:#c2410c; color:white; border:none; border-radius:40px; padding:0.3rem 0.9rem; margin-top:8px;">🗑️ Excluir</button>
+                    </div>
+                `;
+            });
+            document.getElementById('adminQuestionsList').innerHTML = html;
+            
+            document.querySelectorAll('.delete-q').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const id = btn.getAttribute('data-id');
+                    if (confirm('Excluir esta questão?')) {
+                        await deleteDoc(doc(db, "questions", id));
+                        showToast('Questão removida!');
+                        loadQuestions();
+                        loadAdminQuestions();
+                    }
+                });
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    
+    // Criar questão
+    async function createNewQuestion() {
+        if (!isAdmin) {
+            showToast('Acesso negado! Faça login como admin.', true);
+            return;
+        }
+        
+        const type = document.getElementById('questionType').value;
+        const text = document.getElementById('questionText').value.trim();
+        const imageUrl = document.getElementById('imageUrl').value.trim();
+        
+        if (!text) {
+            showToast('Digite a pergunta!', true);
+            return;
+        }
+        
+        let questionData = {
+            questionText: text,
+            type: type,
+            createdAt: new Date().toISOString()
+        };
+        
+        if (imageUrl) questionData.imageUrl = imageUrl;
+        
+        if (type === 'multiple') {
+            const alternatives = {
+                A: document.getElementById('altA').value.trim(),
+                B: document.getElementById('altB').value.trim(),
+                C: document.getElementById('altC').value.trim(),
+                D: document.getElementById('altD').value.trim()
+            };
+            
+            if (!alternatives.A || !alternatives.B || !alternatives.C || !alternatives.D) {
+                showToast('Preencha todas as alternativas!', true);
+                return;
+            }
+            
+            const correctAlt = document.getElementById('correctAlternative').value;
+            questionData.alternatives = alternatives;
+            questionData.correctAnswer = correctAlt;
+        } else {
+            const correctAnswer = document.getElementById('correctAnswer').value.trim();
+            if (!correctAnswer) {
+                showToast('Digite a resposta correta!', true);
+                return;
+            }
+            questionData.correctAnswer = correctAnswer;
+        }
+        
+        try {
+            const newId = Date.now().toString();
+            await setDoc(doc(db, "questions", newId), questionData);
+            showToast('✅ Questão criada com sucesso!');
+            
+            // Limpar formulário
+            document.getElementById('questionText').value = '';
+            document.getElementById('imageUrl').value = '';
+            document.getElementById('altA').value = '';
+            document.getElementById('altB').value = '';
+            document.getElementById('altC').value = '';
+            document.getElementById('altD').value = '';
+            document.getElementById('correctAnswer').value = '';
+            
+            loadQuestions();
+            if (isAdmin) loadAdminQuestions();
+        } catch (err) {
+            showToast('Erro: ' + err.message, true);
+        }
+    }
+    
+    // Auth
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('userEmailDisplay').innerHTML = `${user.email} ${isAdmin ? '<span style="background:#c2410c; color:white; padding:2px 8px; border-radius:20px; font-size:11px; margin-left:5px;">ADMIN</span>' : ''}`;
+            document.getElementById('loginSignupBtn').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'inline-block';
+            
+            isAdmin = await verificarSeEAdmin(user.email);
+            
+            if (isAdmin) {
+                document.getElementById('adminPanel').classList.add('visible');
+                loadAdminQuestions();
+                document.getElementById('userEmailDisplay').innerHTML = `${user.email} <span style="background:#c2410c; color:white; padding:2px 8px; border-radius:20px; font-size:11px;">ADMIN</span>`;
+            }
+        } else {
+            currentUser = null;
+            isAdmin = false;
+            document.getElementById('userEmailDisplay').innerHTML = 'Não autenticado';
+            document.getElementById('loginSignupBtn').style.display = 'inline-block';
+            document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('adminPanel').classList.remove('visible');
+        }
+        loadQuestions();
+    });
+    
+    // Modal
+    const modal = document.getElementById('authModal');
+    const closeModal = document.getElementById('closeAuthModal');
+    const authForm = document.getElementById('authForm');
+    const switchBtn = document.getElementById('switchToSignupBtn');
+    let isLogin = true;
+    
+    document.getElementById('loginSignupBtn').onclick = () => modal.style.display = 'flex';
+    document.getElementById('logoutBtn').onclick = async () => { await signOut(auth); showToast('Deslogado'); };
+    closeModal.onclick = () => modal.style.display = 'none';
+    window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+    
+    switchBtn.onclick = () => {
+        isLogin = !isLogin;
+        switchBtn.innerText = isLogin ? 'Criar Conta' : 'Voltar para Login';
+        document.querySelector('.modal-header').innerText = isLogin ? 'Entrar' : 'Criar Conta';
+    };
+    
+    authForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('authEmail').value;
+        const password = document.getElementById('authPassword').value;
+        try {
+            if (isLogin) {
+                await signInWithEmailAndPassword(auth, email, password);
+                showToast(`Bem-vindo ${email}!`);
+            } else {
+                await createUserWithEmailAndPassword(auth, email, password);
+                showToast(`Conta criada! Faça login.`);
+            }
+            modal.style.display = 'none';
+            document.getElementById('authErrorMsg').innerText = '';
+        } catch (err) {
+            document.getElementById('authErrorMsg').innerText = err.message;
+        }
+    };
+    
+    // Admin button
+    document.getElementById('secretAdminTrigger').onclick = () => {
+        if (!currentUser) {
+            showToast('Faça login primeiro', true);
+            modal.style.display = 'flex';
+        } else if (!isAdmin) {
+            showToast('Acesso apenas para administradores', true);
+        } else {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('visible');
+            if (panel.classList.contains('visible')) loadAdminQuestions();
+        }
+    };
+    
+    document.getElementById('createQuestionBtn')?.addEventListener('click', createNewQuestion);
+    document.getElementById('refreshBtn')?.addEventListener('click', () => {
+        loadQuestions();
+        if (isAdmin) loadAdminQuestions();
+    });
+    
+    // Inicializar tipo
+    document.getElementById('questionType').dispatchEvent(new Event('change'));
+</script>
+</body>
+</html>
