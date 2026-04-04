@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Variados aos Estudos | Sistema de Aprendizagem</title>
+    <title>Variados aos Estudos | Sala do Futuro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
@@ -89,6 +89,7 @@
         .btn-outline:hover { background: #667eea; color: white; }
         .btn-success { background: #10b981; color: white; }
         .btn-danger { background: #ef4444; color: white; }
+        .btn-warning { background: #f59e0b; color: white; }
         
         .tabs {
             display: flex;
@@ -147,6 +148,7 @@
             border: 1px solid #e2e8f0;
             transition: all 0.3s;
             cursor: pointer;
+            position: relative;
         }
         
         .task-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
@@ -154,6 +156,22 @@
         .task-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; }
         .task-meta { font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem; }
         .task-time { font-size: 0.7rem; color: #94a3b8; margin-top: 0.5rem; }
+        
+        .delete-task {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .delete-task:hover { background: #dc2626; color: white; transform: scale(1.1); }
         
         .question-item {
             background: #f8fafc;
@@ -251,7 +269,7 @@
         
         .modal-content {
             background: white;
-            max-width: 600px;
+            max-width: 700px;
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
@@ -334,6 +352,24 @@
             margin-bottom: 0.5rem;
         }
         
+        .review-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 12px;
+        }
+        
+        .review-text {
+            width: 100%;
+            min-height: 80px;
+            padding: 0.8rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            font-family: inherit;
+            margin-top: 0.5rem;
+        }
+        
         @media (max-width: 768px) {
             .container { padding: 1rem; }
             .tabs { flex-direction: column; border-radius: 20px; }
@@ -355,17 +391,22 @@
             font-weight: 600;
         }
         
-        .badge-admin { background: #ef4444; color: white; }
-        .badge-professor { background: #3b82f6; color: white; }
-        .badge-diretor { background: #8b5cf6; color: white; }
+        .category-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            background: #e2e8f0;
+            color: #475569;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
         <div class="logo">
-            <h1>📚 Variados aos Estudos</h1>
-            <span>Sistema de Aprendizagem Inteligente</span>
+            <h1>🏫 Sala do Futuro</h1>
+            <span>Aprendizagem Interativa</span>
         </div>
         <div class="user-info" id="userInfo">
             <div class="xp-bar" id="xpBar" style="display: none;">
@@ -381,14 +422,14 @@
     </div>
     
     <div class="tabs" id="tabs">
-        <div class="tab active" data-tab="questions">📝 Questões</div>
-        <div class="tab" data-tab="tasks">📋 Tarefas</div>
-        <div class="tab" data-tab="completed">✅ Concluídas</div>
+        <div class="tab active" data-tab="questions">📝 Banco de Questões</div>
+        <div class="tab" data-tab="tasks">📋 Minhas Tarefas</div>
+        <div class="tab" data-tab="completed">✅ Tarefas Concluídas</div>
         <div class="tab" data-tab="ranking">🏆 Ranking</div>
     </div>
     
     <div id="tab-questions" class="tab-content active"><div class="panel"><div class="section-title">📚 Banco de Questões</div><div id="questionsList" class="loading">Carregando questões...</div></div></div>
-    <div id="tab-tasks" class="tab-content"><div class="panel"><div class="section-title">📋 Tarefas Pendentes</div><div id="pendingTasksList" class="tasks-grid"><div class="loading">Carregando tarefas...</div></div></div></div>
+    <div id="tab-tasks" class="tab-content"><div class="panel"><div class="section-title">📋 Minhas Tarefas</div><div id="pendingTasksList" class="tasks-grid"><div class="loading">Carregando tarefas...</div></div></div></div>
     <div id="tab-completed" class="tab-content"><div class="panel"><div class="section-title">✅ Tarefas Concluídas</div><div id="completedTasksList" class="tasks-grid"><div class="loading">Carregando...</div></div></div></div>
     <div id="tab-ranking" class="tab-content"><div class="panel"><div class="section-title">🏆 Ranking de Alunos</div><div id="rankingList" class="loading">Carregando ranking...</div></div></div>
     
@@ -407,7 +448,11 @@
             <div class="form-group"><label>Alternativa Correta</label><select id="correctAlternative"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>
         </div>
         <div id="writtenContainer"><div class="form-group"><label>Resposta Correta</label><input type="text" id="correctAnswer" placeholder="Digite a resposta correta"></div></div>
-        <div class="form-group"><label>Categoria</label><select id="taskCategory"><option>Matemática</option><option>Português</option><option>Ciências</option><option>História</option><option>Geografia</option><option>Inglês</option></select></div>
+        <div class="form-group"><label>Categoria</label><select id="taskCategory">
+            <option>Matemática</option><option>Português</option><option>Ciências</option>
+            <option>História</option><option>Geografia</option><option>Inglês</option>
+            <option>Outros</option>
+        </select></div>
         <button id="createQuestionBtn" class="btn btn-primary">➕ Criar Questão</button>
         
         <hr>
@@ -418,6 +463,11 @@
         <div class="form-group"><label>Enviar para</label><select id="targetUsers" multiple style="height:100px"></select></div>
         <div class="form-group"><label>Quantidade de Questões</label><input type="number" id="questionsCount" value="3" min="1" max="10"></div>
         <button id="createTaskBtn" class="btn btn-primary">📤 Criar Tarefa</button>
+        
+        <hr>
+        
+        <h3><i class="fas fa-trash-alt"></i> Gerenciar Tarefas</h3>
+        <div id="manageTasksList" class="loading">Carregando tarefas...</div>
         
         <hr>
         
@@ -438,7 +488,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, query, orderBy, addDoc, where, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, orderBy, addDoc, where, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
     
     const firebaseConfig = {
@@ -461,6 +511,7 @@
     let currentUserXP = 0;
     let allQuestions = [];
     let taskAnswers = {};
+    let taskReviews = {};
     let currentTaskId = null;
     let currentTaskQuestions = [];
     
@@ -513,23 +564,16 @@
         return classes[role] || 'role-aluno';
     }
     
-    // FUNÇÃO CRÍTICA: Verifica se o email é admin no Realtime Database
     async function isAdminInRTDB(email) {
         try {
             const adminRef = ref(rtdb, 'admin-users');
             const snapshot = await get(adminRef);
-            
             if (snapshot.exists()) {
                 const admins = snapshot.val();
-                // Procura em todos os admins
-                for (const [key, admin] of Object.entries(admins)) {
-                    if (admin.email === email) {
-                        console.log(`✅ ${email} é ADMIN no Realtime Database!`);
-                        return true;
-                    }
+                for (const [key, admin] of Object.entries(admiris)) {
+                    if (admin.email === email) return true;
                 }
             }
-            console.log(`❌ ${email} NÃO é admin no Realtime Database`);
             return false;
         } catch (error) {
             console.error("Erro ao verificar admin no RTDB:", error);
@@ -541,15 +585,12 @@
         try {
             const userRef = doc(db, "users", email);
             let userDoc = await getDoc(userRef);
-            
-            // Verifica se é admin no Realtime Database
             const isRtdbAdmin = await isAdminInRTDB(email);
             
             if (!userDoc.exists()) {
-                // Criar novo usuário
                 const newUser = {
                     email: email,
-                    role: isRtdbAdmin ? 'diretor' : 'aluno', // Se for admin no RTDB, vira diretor!
+                    role: isRtdbAdmin ? 'diretor' : 'aluno',
                     xp: 0,
                     level: 1,
                     name: email.split('@')[0],
@@ -558,19 +599,14 @@
                     totalCorrect: 0
                 };
                 await setDoc(userRef, newUser);
-                console.log(`✅ Usuário ${email} criado com role: ${newUser.role}`);
                 return newUser;
             }
             
             const userData = userDoc.data();
-            
-            // Se o email está no RTDB como admin mas no Firestore não é, atualiza!
             if (isRtdbAdmin && userData.role !== 'diretor' && userData.role !== 'admin') {
-                console.log(`🔄 Atualizando ${email} para diretor (encontrado no RTDB)`);
                 await updateDoc(userRef, { role: 'diretor' });
                 userData.role = 'diretor';
             }
-            
             return userData;
         } catch (error) {
             console.error("Erro ao carregar usuário:", error);
@@ -619,7 +655,8 @@
         
         container.innerHTML = allQuestions.map(q => `
             <div class="question-item">
-                <div style="font-weight:700; margin-bottom:0.5rem">❓ ${escapeHtml(q.questionText)}</div>
+                <div><span class="category-badge">${escapeHtml(q.category || 'Geral')}</span></div>
+                <div style="font-weight:700; margin:0.5rem 0">❓ ${escapeHtml(q.questionText)}</div>
                 ${q.imageUrl ? `<img src="${escapeHtml(q.imageUrl)}" style="max-width:100%; max-height:150px; border-radius:12px; margin-bottom:0.5rem">` : ''}
                 ${q.type === 'multiple' ? `
                     <div id="alts-${q.id}">
@@ -698,7 +735,7 @@
                     pending.map(t => `
                         <div class="task-card" onclick="window.openTaskModal('${t.id}','${escapeHtml(t.title)}',${JSON.stringify(t.questions).replace(/"/g, '&quot;')}, '${t.createdAt}')">
                             <div class="task-title">${escapeHtml(t.title)}</div>
-                            <div class="task-meta">${t.category || 'Geral'} • ${t.questions?.length || 0} questões</div>
+                            <div class="task-meta"><span class="category-badge">${escapeHtml(t.category || 'Geral')}</span> • ${t.questions?.length || 0} questões</div>
                             <div class="task-time"><i class="far fa-clock"></i> ${formatTimeAgo(t.createdAt)}</div>
                         </div>
                     `).join('');
@@ -710,8 +747,9 @@
                     completed.map(t => `
                         <div class="task-card">
                             <div class="task-title">${escapeHtml(t.title)}</div>
-                            <div class="task-meta">${t.category || 'Geral'} • ${t.questions?.length || 0} questões</div>
+                            <div class="task-meta"><span class="category-badge">${escapeHtml(t.category || 'Geral')}</span> • ${t.questions?.length || 0} questões</div>
                             <div class="task-time"><i class="fas fa-check-circle" style="color:#10b981"></i> Concluída ${formatTimeAgo(t.completedAt || t.createdAt)}</div>
+                            ${t.userReview ? `<div class="review-box"><i class="fas fa-comment"></i> Sua revisão: "${escapeHtml(t.userReview)}"</div>` : ''}
                         </div>
                     `).join('');
             }
@@ -719,6 +757,49 @@
             console.error("Erro ao carregar tarefas:", error);
         }
     }
+    
+    async function loadManageTasks() {
+        if (!currentUser) return;
+        try {
+            const snapshot = await getDocs(collection(db, "tasks"));
+            const tasks = [];
+            snapshot.forEach(docSnap => tasks.push({ id: docSnap.id, ...docSnap.data() }));
+            
+            const manageContainer = document.getElementById('manageTasksList');
+            if (manageContainer) {
+                manageContainer.innerHTML = tasks.length === 0 ?
+                    '<div class="loading">📭 Nenhuma tarefa criada ainda</div>' :
+                    tasks.map(t => `
+                        <div class="user-item">
+                            <div>
+                                <strong>${escapeHtml(t.title)}</strong><br>
+                                <small>Criada por: ${escapeHtml(t.createdBy)}</small><br>
+                                <small>${t.questions?.length || 0} questões • ${t.completedBy?.length || 0} concluíram</small>
+                            </div>
+                            <div>
+                                <button class="btn btn-danger" style="padding:0.3rem 0.8rem" onclick="window.deleteTask('${t.id}')">
+                                    <i class="fas fa-trash"></i> Excluir
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+            }
+        } catch (error) {
+            console.error("Erro ao carregar tarefas para gerenciar:", error);
+        }
+    }
+    
+    window.deleteTask = async (taskId) => {
+        if (!confirm("Tem certeza que deseja excluir esta tarefa? Esta ação não pode ser desfeita!")) return;
+        try {
+            await deleteDoc(doc(db, "tasks", taskId));
+            showToast("✅ Tarefa excluída com sucesso!");
+            await loadManageTasks();
+            await loadUserTasks();
+        } catch (error) {
+            showToast("Erro ao excluir tarefa: " + error.message, true);
+        }
+    };
     
     window.openTaskModal = (id, title, questions, createdAt) => {
         const modalTitle = document.getElementById('modalTaskTitle');
@@ -730,6 +811,7 @@
             modalQuestions.innerHTML = questions.map((q, idx) => `
                 <div style="margin-bottom:1rem; padding:1rem; background:#f8fafc; border-radius:16px">
                     <div><strong>${idx+1}. ${escapeHtml(q.questionText)}</strong></div>
+                    <div class="task-meta">Tipo: ${q.type === 'multiple' ? 'Múltipla Escolha' : 'Resposta Escrita'}</div>
                     ${q.imageUrl ? `<img src="${escapeHtml(q.imageUrl)}" style="max-width:100%; max-height:100px; border-radius:8px; margin:0.5rem 0">` : ''}
                     ${q.type === 'multiple' ? `
                         <div id="task-alt-${idx}">
@@ -744,6 +826,7 @@
         currentTaskId = id;
         currentTaskQuestions = questions;
         taskAnswers = {};
+        taskReviews = {};
         document.getElementById('taskModal').style.display = 'flex';
     };
     
@@ -777,16 +860,19 @@
             
             const fb = document.getElementById(`task-fb-${i}`);
             if (fb) {
-                fb.innerHTML = isCorrect ? '✅ Correta!' : `❌ Incorreta! Resposta: ${escapeHtml(q.correctAnswer)}`;
+                fb.innerHTML = isCorrect ? '✅ Correta!' : `❌ Incorreta! Resposta correta: ${escapeHtml(q.correctAnswer)}`;
                 fb.className = isCorrect ? 'feedback correct' : 'feedback incorrect';
             }
         }
         
         if (allCorrect && correctCount === currentTaskQuestions.length) {
+            const review = prompt("📝 Parabéns! Você concluiu todas as questões!\n\nDeixe sua opinião sobre esta tarefa (opcional):", "");
+            
             try {
                 await updateDoc(doc(db, "tasks", currentTaskId), {
                     completedBy: arrayUnion(currentUser.email),
-                    completedAt: new Date().toISOString()
+                    completedAt: new Date().toISOString(),
+                    [`reviews.${currentUser.email}`]: review || "Sem comentários"
                 });
                 await addXP(currentTaskQuestions.length * 15);
                 showToast(`🎉 Tarefa concluída! +${currentTaskQuestions.length * 15} XP`);
@@ -926,12 +1012,16 @@
                 targetUsers: targetUsers,
                 createdBy: currentUser.email,
                 createdAt: new Date().toISOString(),
-                completedBy: []
+                completedBy: [],
+                reviews: {}
             });
             showToast('✅ Tarefa criada com sucesso!');
             document.getElementById('taskTitle').value = '';
             document.getElementById('taskDesc').value = '';
             await loadUserTasks();
+            if (currentUserRole === 'admin' || currentUserRole === 'diretor') {
+                await loadManageTasks();
+            }
         } catch (error) {
             showToast('Erro ao criar tarefa: ' + error.message, true);
         }
@@ -1039,8 +1129,6 @@
                 <div class="form-group"><label>Cargo</label><input type="text" value="${getRoleName(userData.role)}" disabled></div>
                 <div class="form-group"><label>XP Total</label><input type="text" value="${userData.xp || 0} XP" disabled></div>
                 <div class="form-group"><label>Nível</label><input type="text" value="${userData.level || 1}" disabled></div>
-                <div class="form-group"><label>Questões Respondidas</label><input type="text" value="${userData.totalQuestionsAnswered || 0}" disabled></div>
-                <div class="form-group"><label>Taxa de Acerto</label><input type="text" value="${userData.totalCorrect && userData.totalQuestionsAnswered ? Math.round((userData.totalCorrect / userData.totalQuestionsAnswered) * 100) : 0}%" disabled></div>
             `;
         }
         document.getElementById('profileModal').style.display = 'flex';
@@ -1072,44 +1160,26 @@
             currentUserRole = userData.role;
             currentUserXP = userData.xp || 0;
             
-            const userEmailDisplay = document.getElementById('userEmailDisplay');
-            const roleBadge = document.getElementById('roleBadge');
-            const xpBar = document.getElementById('xpBar');
-            const xpPoints = document.getElementById('xpPoints');
-            const loginBtn = document.getElementById('loginBtn');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const profileBtn = document.getElementById('profileBtn');
-            const adminTrigger = document.getElementById('adminTriggerBtn');
-            const adminPanel = document.getElementById('adminPanel');
+            document.getElementById('userEmailDisplay').innerHTML = user.email;
+            document.getElementById('roleBadge').innerHTML = getRoleName(currentUserRole);
+            document.getElementById('roleBadge').className = `role-badge ${getRoleClass(currentUserRole)}`;
+            document.getElementById('xpBar').style.display = 'flex';
+            document.getElementById('xpPoints').innerHTML = `${currentUserXP} XP`;
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'inline-block';
+            document.getElementById('profileBtn').style.display = 'inline-block';
             
-            if (userEmailDisplay) userEmailDisplay.innerHTML = user.email;
-            if (roleBadge) {
-                roleBadge.innerHTML = getRoleName(currentUserRole);
-                roleBadge.className = `role-badge ${getRoleClass(currentUserRole)}`;
-            }
-            if (xpBar) xpBar.style.display = 'flex';
-            if (xpPoints) xpPoints.innerHTML = `${currentUserXP} XP`;
-            if (loginBtn) loginBtn.style.display = 'none';
-            if (logoutBtn) logoutBtn.style.display = 'inline-block';
-            if (profileBtn) profileBtn.style.display = 'inline-block';
-            
-            // MOSTRA O BOTÃO se for admin/diretor/professor
             const isStaff = currentUserRole === 'admin' || currentUserRole === 'diretor' || currentUserRole === 'professor';
-            if (adminTrigger) {
-                if (isStaff) {
-                    adminTrigger.classList.remove('hidden');
-                    console.log("✅ Botão admin VISÍVEL! Role:", currentUserRole);
-                } else {
-                    adminTrigger.classList.add('hidden');
-                    console.log("❌ Botão admin HIDDEN. Role:", currentUserRole);
-                }
-            }
+            const adminTrigger = document.getElementById('adminTriggerBtn');
+            if (adminTrigger) adminTrigger.classList.toggle('hidden', !isStaff);
             
             const isFullAdmin = currentUserRole === 'admin' || currentUserRole === 'diretor';
+            const adminPanel = document.getElementById('adminPanel');
             if (adminPanel) adminPanel.classList.toggle('visible', isFullAdmin);
             
             if (isFullAdmin) {
                 await loadUsersList();
+                await loadManageTasks();
             }
             
             await loadAllQuestions();
@@ -1119,23 +1189,14 @@
             currentUser = null;
             currentUserRole = null;
             
-            const userEmailDisplay = document.getElementById('userEmailDisplay');
-            const roleBadge = document.getElementById('roleBadge');
-            const xpBar = document.getElementById('xpBar');
-            const loginBtn = document.getElementById('loginBtn');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const profileBtn = document.getElementById('profileBtn');
-            const adminTrigger = document.getElementById('adminTriggerBtn');
-            const adminPanel = document.getElementById('adminPanel');
-            
-            if (userEmailDisplay) userEmailDisplay.innerHTML = 'Não autenticado';
-            if (roleBadge) roleBadge.innerHTML = '';
-            if (xpBar) xpBar.style.display = 'none';
-            if (loginBtn) loginBtn.style.display = 'inline-block';
-            if (logoutBtn) logoutBtn.style.display = 'none';
-            if (profileBtn) profileBtn.style.display = 'none';
-            if (adminTrigger) adminTrigger.classList.add('hidden');
-            if (adminPanel) adminPanel.classList.remove('visible');
+            document.getElementById('userEmailDisplay').innerHTML = 'Não autenticado';
+            document.getElementById('roleBadge').innerHTML = '';
+            document.getElementById('xpBar').style.display = 'none';
+            document.getElementById('loginBtn').style.display = 'inline-block';
+            document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('profileBtn').style.display = 'none';
+            document.getElementById('adminTriggerBtn').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('visible');
             
             await loadAllQuestions();
         }
@@ -1171,7 +1232,7 @@
                 await signInWithEmailAndPassword(auth, email, password);
                 showToast(`Bem-vindo(a)!`);
             } else {
-                const userCred = await createUserWithEmailAndPassword(auth, email, password);
+                await createUserWithEmailAndPassword(auth, email, password);
                 await setDoc(doc(db, "users", email), {
                     email: email,
                     role: 'aluno',
@@ -1185,10 +1246,8 @@
                 showToast(`Conta criada com sucesso! Faça login.`);
                 await signOut(auth);
                 isLogin = true;
-                const switchBtn = document.getElementById('switchAuthBtn');
-                const authTitle = document.getElementById('authTitle');
-                if (switchBtn) switchBtn.innerText = 'Criar Conta';
-                if (authTitle) authTitle.innerText = 'Entrar';
+                document.getElementById('switchAuthBtn').innerText = 'Criar Conta';
+                document.getElementById('authTitle').innerText = 'Entrar';
             }
             if (authModal) authModal.style.display = 'none';
             if (errorMsg) errorMsg.innerText = '';
@@ -1221,23 +1280,10 @@
         });
     });
     
-    console.log('🔥 Sistema híbrido pronto!');
-    console.log('✅ Firestore para dados, Realtime para admins');
-    console.log('✅ O botão admin aparece automaticamente se seu email estiver no RTDB');
-    
-    // Verificar admins no console
-    async function checkAdmins() {
-        const rtdb = getDatabase(app);
-        const snapshot = await get(ref(rtdb, 'admin-users'));
-        if (snapshot.exists()) {
-            console.log("👑 Admins no Realtime Database:");
-            const admins = snapshot.val();
-            for (const [key, admin] of Object.entries(admins)) {
-                console.log(`   - ${admin.email}`);
-            }
-        }
-    }
-    checkAdmins();
+    console.log('🏫 Sala do Futuro - Sistema completo!');
+    console.log('✅ Categoria "Outros" adicionada');
+    console.log('✅ Possível excluir tarefas antigas');
+    console.log('✅ Revisão ao finalizar tarefas');
 </script>
 </body>
 </html>
